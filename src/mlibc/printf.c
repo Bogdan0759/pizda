@@ -3,7 +3,7 @@
 static int cursor_row = 0;
 static int cursor_col = 0;
 
-void printf(char *format, ...) { // 70% взято (спизджено) с github🥰🥰
+void printf(char *format, ...) { // 55% кода взято (спизджено) с github🥰🥰
   __builtin_va_list args;
   __builtin_va_start(args, format);
   char *video_memory = (char *)0xb8000;
