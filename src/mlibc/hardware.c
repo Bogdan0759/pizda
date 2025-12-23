@@ -1,4 +1,4 @@
-#include "mlibc.h"
+
 unsigned char inb(unsigned short port) {
     unsigned char result;
     __asm__ volatile("inb %w1, %0" : "=a"(result) : "Nd"(port));
