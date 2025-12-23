@@ -1,5 +1,5 @@
 #include "vga.h"
-
+#include "../../mlibc/mlibc.h"
 // Тупо отчиска
 void clear_screen() {
     char* video_memory = (char*) 0xb8000;
@@ -35,12 +35,3 @@ void update_cursor(int x, int y) {
     outb(0x3D5, (unsigned char)((pos >> 8) & 0xFF));
 }
 
-unsigned char inb(unsigned short port) {
-    unsigned char result;
-    __asm__ volatile("inb %w1, %0" : "=a"(result) : "Nd"(port));
-    return result;
-}
-
-void outb(unsigned short port, unsigned char data) {
-    __asm__ volatile("outb %0, %w1" : : "a"(data), "Nd"(port));
-}

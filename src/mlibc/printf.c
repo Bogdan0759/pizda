@@ -1,5 +1,5 @@
 #include "../kernel/drivers/vga.h"
-
+#include "mlibc.h"
 static int cursor_row = 0;
 static int cursor_col = 0;
 

@@ -11,6 +11,7 @@ void _start() {
     clear_screen();
     print("LamdaOS started!", 0, 30, 0x0A);
     print("There's nothing here yet =)", 3, 0, 0x0F);
+    printf("%s", "printf test");
 
     char s_buf[2048];
     int current_line = 5;
@@ -61,7 +62,9 @@ void _start() {
             int second_number = atoi(s_buf);
             
             
-        } 
+        }
+            
+        
         else {
             print("Unknown command", current_line, 0, 0x0F);
             current_line++;

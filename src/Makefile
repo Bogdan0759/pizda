@@ -14,6 +14,7 @@ KERNEL_BIN = ../bin/kernel.bin
 KERNEL_O = ../bin/kernel.o
 VGA_O = ../bin/vga.o
 KEYBOARD_O = ../bin/keyboard.o
+PRINTF_O = ../bin/printf.o
 IMAGE = ../os-image.bin
 
 # Цель по умолчанию (просто собрать образ)
@@ -28,8 +29,8 @@ $(BOOT_BIN): boot/boot.asm
 	$(AS) -f bin boot/boot.asm -o $(BOOT_BIN)
 
 # Как собрать ядро
-$(KERNEL_BIN): $(KERNEL_O) $(VGA_O) $(KEYBOARD_O)
-	$(LD) $(LDFLAGS) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) -o $(KERNEL_BIN)
+$(KERNEL_BIN): $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O)
+	$(LD) $(LDFLAGS) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) -o $(KERNEL_BIN)
 
 $(KERNEL_O): kernel/kernel.c
 	$(CC) $(CFLAGS) -c kernel/kernel.c -o $(KERNEL_O)
@@ -39,6 +40,9 @@ $(VGA_O): kernel/drivers/vga.c
 
 $(KEYBOARD_O): kernel/drivers/keyboard.c
 	$(CC) $(CFLAGS) -c kernel/drivers/keyboard.c -o $(KEYBOARD_O)
+
+$(PRINTF_O): mlibc/printf.c
+	$(CC) $(CFLAGS) -c mlibc/printf.c -o $(PRINTF_O)
 
 # Команда для запуска в QEMU
 run: $(IMAGE)
