@@ -16,6 +16,7 @@ VGA_O = ../bin/vga.o
 KEYBOARD_O = ../bin/keyboard.o
 PRINTF_O = ../bin/printf.o
 STRING_O = ../bin/string.o
+ITOA_O = ../bin/itoa.o
 HARDWARE_O = ../bin/hardware.o
 IMAGE = ../os-image.bin
 
@@ -31,8 +32,8 @@ $(BOOT_BIN): boot/boot.asm
 	$(AS) -f bin boot/boot.asm -o $(BOOT_BIN)
 
 # Как собрать ядро
-$(KERNEL_BIN): $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(HARDWARE_O)
-	$(LD) $(LDFLAGS) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(HARDWARE_O) -o $(KERNEL_BIN)
+$(KERNEL_BIN): $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O)
+	$(LD) $(LDFLAGS) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O) -o $(KERNEL_BIN)
 
 $(KERNEL_O): kernel/kernel.c
 	$(CC) $(CFLAGS) -c kernel/kernel.c -o $(KERNEL_O)
@@ -48,6 +49,9 @@ $(PRINTF_O): mlibc/printf.c
 
 $(STRING_O): mlibc/string.c
 	$(CC) $(CFLAGS) -c mlibc/string.c -o $(STRING_O)
+
+$(ITOA_O): mlibc/itoa.c
+	$(CC) $(CFLAGS) -c mlibc/itoa.c -o $(ITOA_O)
 
 $(HARDWARE_O): mlibc/hardware.c
 	$(CC) $(CFLAGS) -c mlibc/hardware.c -o $(HARDWARE_O)

@@ -50,18 +50,32 @@ void _start() {
             print(&s_buf[5], current_line, 2, 0x0F);
             current_line++;
             print(dir, current_line,0, 0x0F);
-
-
-        
         } else if (strcmp(s_buf, "calc") == 0) {
             print("firts number: ", current_line++, 0, 0x0F);
-            scanf(s_buf, 2048, current_line, 2, 0x0F, dir);
+            scanf(s_buf, 2048, current_line++, 2, 0x0F, dir);
             int first_number = atoi(s_buf);
             print("second number: ", current_line++, 0, 0x0F);
-            scanf(s_buf, 2048, current_line, 2, 0x0F, dir);
+            scanf(s_buf, 2048, current_line++, 2, 0x0F, dir);
             int second_number = atoi(s_buf);
-            
-            
+            print("operation: ", current_line++, 0, 0x0F);
+            scanf(s_buf, 2048, current_line++, 2, 0x0F, dir);
+            char operation = s_buf[0];
+            char result_buf[32];
+            if (operation == '+') {
+                itoa(first_number + second_number, result_buf, 10);
+                print(result_buf, current_line++, 0, 0x0F);
+            } else if (operation == '-') {
+                itoa(first_number - second_number, result_buf, 10);
+                print(result_buf, current_line++, 0, 0x0F);
+            } else if (operation == '*') {
+                itoa(first_number * second_number, result_buf, 10);
+                print(result_buf, current_line++, 0, 0x0F);
+            } else if (operation == '/') {
+                itoa(first_number / second_number, result_buf, 10);
+                print(result_buf, current_line++, 0, 0x0F);
+            }
+            print(dir, current_line,0, 0x0F);
+            print(">", current_line,1, 0x0F);
         }
             
         

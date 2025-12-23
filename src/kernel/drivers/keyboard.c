@@ -5,8 +5,27 @@ unsigned char kbd_us[128] = {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',   
     '\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',   
     0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', 0,         
-    '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, '*', 0, ' '
+    '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, '*', 0, ' ',
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    '7', '8', '9', '-',  // Numpad 7,8,9,-
+    '4', '5', '6', '+',  // Numpad 4,5,6,+
+    '1', '2', '3',       // Numpad 1,2,3
+    '0', '.'             // Numpad 0,.
 };
+
+unsigned char kbd_us_shift[128] = {
+    0,  27, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b',   
+    '\t', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n',   
+    0, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', '~', 0,         
+    '|', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 0, '*', 0, ' ',
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    '7', '8', '9', '-', 
+    '4', '5', '6', '+',  
+    '1', '2', '3',       
+    '0', '.'             
+};
+
+static int shift_pressed = 0;
 
 void handle_keyboard() {
     static int current_col = 2;
@@ -16,9 +35,18 @@ void handle_keyboard() {
         unsigned char scancode = inb(0x60);
         
         
+        if (scancode == 0x2A || scancode == 0x36) {
+            shift_pressed = 1;
+            return;
+        }
+        if (scancode == 0xAA || scancode == 0xB6) {
+            shift_pressed = 0;
+            return;
+        }
+        
         if (scancode < 0x80) {
             
-            char character = kbd_us[scancode];
+            char character = shift_pressed ? kbd_us_shift[scancode] : kbd_us[scancode];
             
             
             if (scancode == 0x48) {       
@@ -76,6 +104,15 @@ char* scanf(char* buffer, int max_len, int row, int col, char color, char* dir) 
             unsigned char scancode = inb(0x60);
             
             
+            if (scancode == 0x2A || scancode == 0x36) {
+                shift_pressed = 1;
+                continue;
+            }
+            if (scancode == 0xAA || scancode == 0xB6) {
+                shift_pressed = 0;
+                continue;
+            }
+            
             if (scancode < 0x80) {
                 //если получу ентер то нужно заканчивать строку
                 if (scancode == 0x1C) {
@@ -94,7 +131,7 @@ char* scanf(char* buffer, int max_len, int row, int col, char color, char* dir) 
                 }
                 //обычные буковки
                 else {
-                    char character = kbd_us[scancode];
+                    char character = shift_pressed ? kbd_us_shift[scancode] : kbd_us[scancode];
                     
                     if (character != 0 && character != '\n') {
                         buffer[i] = character;
@@ -104,7 +141,6 @@ char* scanf(char* buffer, int max_len, int row, int col, char color, char* dir) 
                         print(dir, row,0, 0x0F);
                         print(">", row,1, 0x0F);
                         update_cursor(col + i, row);
-                        
                     }
                 }
             }
