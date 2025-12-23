@@ -9,7 +9,7 @@
 __attribute__((section(".text.boot"))) // Помечаем как стартовую секцию
 void _start() {
     clear_screen();
-    print("LamdaOS started!", 0, 30, 0x0A);
+    print("OTSOS started!", 0, 30, 0x0A);
     print("There's nothing here yet =)", 3, 0, 0x0F);
 
     char s_buf[2048];
@@ -41,7 +41,7 @@ void _start() {
             current_line = 5;
         }
         else if (strcmp(s_buf, "help") == 0) {
-            print("Command: shutdown ,reboot, clear, echo, mydir, help", current_line++, 0, 0x0A);
+            print("Command: shutdown ,reboot, clear, echo, mydir, help, clac", current_line++, 0, 0x0A);
             print(dir, current_line,0, 0x0F);
             print(">", current_line,1, 0x0F);
         }
@@ -50,14 +50,23 @@ void _start() {
             current_line++;
             print(dir, current_line,0, 0x0F);
         } else if (strcmp(s_buf, "calc") == 0) {
-            print("firts number: ", current_line++, 0, 0x0F);
-            scanf(s_buf, 2048, current_line++, 2, 0x0F, dir);
+            print(dir, current_line,0, 0x0F);
+            print(">", current_line,1, 0x0F);
+            print("firts number: ", current_line++, 2, 0x0F);
+            scanf(s_buf, 2048, current_line-1, 16, 0x0F, dir);
+            
             int first_number = atoi(s_buf);
-            print("second number: ", current_line++, 0, 0x0F);
-            scanf(s_buf, 2048, current_line++, 2, 0x0F, dir);
+            
+            print(dir, current_line,0, 0x0F);
+            print(">", current_line,1, 0x0F);
+            print("second number: ", current_line++, 2, 0x0F);
+            scanf(s_buf, 2048, current_line-1, 17, 0x0F, dir);
             int second_number = atoi(s_buf);
-            print("operation: ", current_line++, 0, 0x0F);
-            scanf(s_buf, 2048, current_line++, 2, 0x0F, dir);
+
+            print(dir, current_line,0, 0x0F);
+            print(">", current_line,1, 0x0F);
+            print("operation: ", current_line++, 2, 0x0F);
+            scanf(s_buf, 2048, current_line-1, 13, 0x0F, dir);
             char operation = s_buf[0];
             char result_buf[32];
             if (operation == '+') {
