@@ -1,6 +1,6 @@
 #include "vga.h"
 #include "../../mlibc/mlibc.h"
-// Тупо отчиска
+// Тупо очистка
 void clear_screen() {
     char* video_memory = (char*) 0xb8000;
     for (int i = 0; i < 80 * 25 * 2; i += 2) {
