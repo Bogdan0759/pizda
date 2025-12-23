@@ -2,6 +2,6 @@
 #define KEYBOARD_H
 
 void handle_keyboard();
-char* scanf(char* buffer, int max_len, int row, int col, char color);
+char* scanf(char* buffer, int max_len, int row, int col, char color, char* dir);
 
 #endif
