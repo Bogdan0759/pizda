@@ -50,8 +50,8 @@ $(PRINTF_O): mlibc/printf.c
 $(STRING_O): mlibc/string.c
 	$(CC) $(CFLAGS) -c mlibc/string.c -o $(STRING_O)
 
-$(ITOA_O): mlibc/itoa.c
-	$(CC) $(CFLAGS) -c mlibc/itoa.c -o $(ITOA_O)
+$(ITOA_O): mlibc/itoa.s
+	$(CC) -c mlibc/itoa.s -o $(ITOA_O)
 
 $(HARDWARE_O): mlibc/hardware.asm
 	$(AS) -f elf64 mlibc/hardware.asm -o $(HARDWARE_O) -D__x86_64__
