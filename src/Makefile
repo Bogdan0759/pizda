@@ -44,8 +44,8 @@ $(VGA_O): kernel/drivers/vga.c
 $(KEYBOARD_O): kernel/drivers/keyboard.c
 	$(CC) $(CFLAGS) -c kernel/drivers/keyboard.c -o $(KEYBOARD_O)
 
-$(PRINTF_O): mlibc/printf.c
-	$(CC) $(CFLAGS) -c mlibc/printf.c -o $(PRINTF_O)
+$(PRINTF_O): mlibc/printf.s
+	$(CC) -c mlibc/printf.s -o $(PRINTF_O)
 
 $(STRING_O): mlibc/string.c
 	$(CC) $(CFLAGS) -c mlibc/string.c -o $(STRING_O)
