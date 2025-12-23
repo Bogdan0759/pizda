@@ -53,8 +53,8 @@ $(STRING_O): mlibc/string.c
 $(ITOA_O): mlibc/itoa.c
 	$(CC) $(CFLAGS) -c mlibc/itoa.c -o $(ITOA_O)
 
-$(HARDWARE_O): mlibc/hardware.c
-	$(CC) $(CFLAGS) -c mlibc/hardware.c -o $(HARDWARE_O)
+$(HARDWARE_O): mlibc/hardware.asm
+	$(AS) -f elf64 mlibc/hardware.asm -o $(HARDWARE_O) -D__x86_64__
 
 # Команда для запуска в QEMU
 run: $(IMAGE)
