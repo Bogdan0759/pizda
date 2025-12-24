@@ -1,11 +1,7 @@
-	.file	"printf.c"
 	.intel_syntax noprefix
 	.text
-	.p2align 4
 	.globl	printf
-	.type	printf, @function
 printf:
-	endbr64
 	push	r12
 	push	rbp
 	push	rbx
@@ -373,7 +369,7 @@ printf:
 .L34:
 	mov	edi, r9d
 	jmp	.L2
-	.size	printf, .-printf
+
 	.local	cursor_col
 	.comm	cursor_col,4,4
 	.local	cursor_row
@@ -383,21 +379,4 @@ printf:
 .LC3:
 	.quad	3978425819141910832
 	.quad	7378413942531504440
-	.ident	"GCC: (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0"
-	.section	.note.GNU-stack,"",@progbits
-	.section	.note.gnu.property,"a"
-	.align 8
-	.long	1f - 0f
-	.long	4f - 1f
-	.long	5
-0:
-	.string	"GNU"
-1:
-	.align 8
-	.long	0xc0000002
-	.long	3f - 2f
-2:
-	.long	0x3
-3:
-	.align 8
-4:
+

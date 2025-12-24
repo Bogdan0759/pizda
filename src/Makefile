@@ -18,6 +18,8 @@ PRINTF_O = ../bin/printf.o
 STRING_O = ../bin/string.o
 ITOA_O = ../bin/itoa.o
 HARDWARE_O = ../bin/hardware.o
+READ_O = ../bin/read.o
+WRITE_O = ../bin/write.o
 IMAGE = ../os-image.bin
 
 # Цель по умолчанию (просто собрать образ)
@@ -32,8 +34,8 @@ $(BOOT_BIN): boot/boot.asm
 	$(AS) -f bin boot/boot.asm -o $(BOOT_BIN)
 
 # Как собрать ядро
-$(KERNEL_BIN): $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O)
-	$(LD) $(LDFLAGS) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O) -o $(KERNEL_BIN)
+$(KERNEL_BIN): $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O)
+	$(LD) $(LDFLAGS) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) -o $(KERNEL_BIN)
 
 $(KERNEL_O): kernel/kernel.c
 	$(CC) $(CFLAGS) -c kernel/kernel.c -o $(KERNEL_O)
@@ -55,6 +57,12 @@ $(ITOA_O): mlibc/itoa.s
 
 $(HARDWARE_O): mlibc/hardware.asm
 	$(AS) -f elf64 mlibc/hardware.asm -o $(HARDWARE_O) -D__x86_64__
+
+$(READ_O): kernel/memory/read.s
+	$(CC) -c kernel/memory/read.s -o $(READ_O)
+
+$(WRITE_O): kernel/memory/write.s
+	$(CC) -c kernel/memory/write.s -o $(WRITE_O)
 
 # Команда для запуска в QEMU
 run: $(IMAGE)
