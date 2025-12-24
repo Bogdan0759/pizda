@@ -1,5 +1,6 @@
 #include "../mlibc/mlibc.h"
 #include "func/calc.h"
+#include "func/mydir.h"
 #include "drivers/keyboard.h"
 #include "drivers/vga.h"
 
@@ -12,8 +13,7 @@ print("There's nothing here yet =)", 3, 0, 0x0F);
 
 char s_buf[2048];
 int current_line = 5;
-char *dir =
-    "/"; // Потом когда добавим файловую систему нужнл будет немного изменить
+char *dir = "/"; // Потом когда добавим файловую систему нужнл будет немного изменить
 
 print(dir, current_line, 0, 0x0F);
 print(">", current_line, 1, 0x0F);
@@ -30,10 +30,7 @@ while (1) {
         outb(0x64, 0xFE);
     } 
     else if (strcmp(s_buf, "mydir") == 0) {
-        print("Your dir: ", current_line++, 0, 0x0F);
-        print(dir, current_line - 1, 11, 0x0F);
-        print(dir, current_line, 0, 0x0F);
-        print(">", current_line, 1, 0x0F);
+       mydir(dir, &current_line);
     } 
     else if (strcmp(s_buf, "clear") == 0) {
         clear_screen();

@@ -21,6 +21,7 @@ HARDWARE_O = ../bin/hardware.o
 READ_O = ../bin/read.o
 WRITE_O = ../bin/write.o
 CALC_O = ../bin/calc.o  
+MYDIR_O = ../bin/mydir.o
 IMAGE = ../../os-image.bin
 # Цель по умолчанию
 all: $(IMAGE)
@@ -33,16 +34,17 @@ $(IMAGE): $(BOOT_BIN) $(KERNEL_BIN)
 $(BOOT_BIN): boot/boot.asm
 	$(AS) -f bin boot/boot.asm -o $(BOOT_BIN)
 
-# Как собрать ядро (ДОБАВЛЕН $(CALC_O) в список зависимостей и линковку)
-$(KERNEL_BIN): $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O)
-	$(LD) $(LDFLAGS) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) -o $(KERNEL_BIN)
+$(KERNEL_BIN): $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) $(MYDIR_O) 
+	$(LD) $(LDFLAGS) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) $(MYDIR_O) -o $(KERNEL_BIN)
 
 $(KERNEL_O): kernel/kernel.c
 	$(CC) $(CFLAGS) -c kernel/kernel.c -o $(KERNEL_O)
 
-# Правило для компиляции калькулятора <--- ДОБАВЛЕНО
 $(CALC_O): kernel/func/calc.c
 	$(CC) $(CFLAGS) -c kernel/func/calc.c -o $(CALC_O)
+
+$(MYDIR_O): kernel/func/mydir.c
+	$(CC) $(CFLAGS) -c kernel/func/mydir.c -o $(MYDIR_O)
 
 $(VGA_O): kernel/drivers/vga.c
 	$(CC) $(CFLAGS) -c kernel/drivers/vga.c -o $(VGA_O)
