@@ -23,7 +23,7 @@ WRITE_O = ../bin/write.o
 CALC_O = ../bin/calc.o  
 MYDIR_O = ../bin/mydir.o
 SHELL_O = ../bin/shell.o
-IMAGE = ../../os-image.bin
+IMAGE = ../os-image.bin
 # Цель по умолчанию
 all: $(IMAGE)
 

@@ -20,7 +20,9 @@ void shell_func(char* s_buf, int* current_line, char* dir){
     } 
     else if (strcmp(s_buf, "clear") == 0) {
         clear_screen();
-        *current_line = 5;
+        *current_line = 1;
+        print(dir, *current_line, 0, 0x0F);
+        print(">", *current_line, 1, 0x0F);
     } 
     else if (strcmp(s_buf, "help") == 0) {
         print("Command: shutdown ,reboot, clear, echo, mydir, help, clac",
