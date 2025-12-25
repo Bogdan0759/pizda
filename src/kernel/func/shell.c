@@ -46,6 +46,7 @@ void shell_func(char* s_buf, int* current_line, char* dir){
         print(&s_buf[5], *current_line, 2, 0x0F);
         (*current_line)++;
         print(dir, *current_line, 0, 0x0F);
+        print(">", *current_line, 1, 0x0F);
     } 
     else if (strcmp(s_buf, "calc") == 0) {
         calc(s_buf, current_line, dir);
