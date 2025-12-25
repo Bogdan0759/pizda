@@ -10,6 +10,7 @@ void shell_func(char* s_buf, int* current_line, char* dir){
     (*current_line)++;
     char vendor[13];
     char model[49];
+    print("TEST3", (*current_line)++, 0, 0x1F);
 
     if (strcmp(s_buf, "shutdown") == 0) {
         outb(0x64, 0xFE);
@@ -22,6 +23,7 @@ void shell_func(char* s_buf, int* current_line, char* dir){
        mydir(dir, current_line);
     } 
     else if (strcmp(s_buf, "info") == 0) {
+       fetch(current_line);
        get_cpu_vendor(vendor);
        get_cpu_model(model);
        print(vendor, (*current_line)++, 0, 0x0F);

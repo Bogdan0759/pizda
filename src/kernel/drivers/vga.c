@@ -10,7 +10,7 @@ void clear_screen() {
 }
 
 // Попытка сделать print
-void print(char* message, int row, int col, char color) {
+void print(const char* message, int row, int col, char color) {
     char* video_memory = (char*) 0xb8000;
     int offset = (row * 80 + col) * 2;
     int i = 0;

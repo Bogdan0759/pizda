@@ -138,8 +138,6 @@ char* scanf(char* buffer, int max_len, int row, int col, char color, char* dir) 
                         video_memory[offset + (i * 2)] = character;
                         video_memory[offset + (i * 2) + 1] = color;
                         i++;
-                        print(dir, row,0, 0x0F);
-                        print(">", row,1, 0x0F);
                         update_cursor(col + i, row);
                     }
                 }
@@ -148,6 +146,8 @@ char* scanf(char* buffer, int max_len, int row, int col, char color, char* dir) 
     }
     
     buffer[i] = '\0';    
+    print(dir, row, 0, 0x0F);
+    print(">", row, 1, 0x0F);
     return buffer; //возврат того что было в буфере
 }
 

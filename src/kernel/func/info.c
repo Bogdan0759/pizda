@@ -1,4 +1,10 @@
 #include "info.h"
+#include "../drivers/vga.h"
+
+
+void fetch(int *current_line){
+    print("_____________", (*current_line)++ , 0, 0x9A);
+}
 
 void get_cpu_model(char *model) {
     unsigned int eax, ebx, ecx, edx;
