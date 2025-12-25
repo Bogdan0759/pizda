@@ -147,7 +147,7 @@ char* scanf(char* buffer, int max_len, int row, int col, char color, char* dir) 
         }
     }
     
-    buffer[i] = '\0';
+    buffer[i] = '\0';    
     return buffer; //возврат того что было в буфере
 }
 

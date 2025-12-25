@@ -2,11 +2,14 @@
 #include "../../mlibc/mlibc.h"
 #include "calc.h"
 #include "mydir.h"
+#include "info.h"
 #include "../drivers/keyboard.h"
 #include "../drivers/vga.h"
 
 void shell_func(char* s_buf, int* current_line, char* dir){
     (*current_line)++;
+    char vendor[13];
+    char model[49];
 
     if (strcmp(s_buf, "shutdown") == 0) {
         outb(0x64, 0xFE);
@@ -18,6 +21,14 @@ void shell_func(char* s_buf, int* current_line, char* dir){
     else if (strcmp(s_buf, "mydir") == 0) {
        mydir(dir, current_line);
     } 
+    else if (strcmp(s_buf, "info") == 0) {
+       get_cpu_vendor(vendor);
+       get_cpu_model(model);
+       print(vendor, (*current_line)++, 0, 0x0F);
+       print(model, (*current_line)++, 0, 0x0F);
+       print(dir, *current_line, 0, 0x0F);
+       print(">", *current_line, 1, 0x0F);
+    } 
     else if (strcmp(s_buf, "clear") == 0) {
         clear_screen();
         *current_line = 1;
@@ -25,7 +36,7 @@ void shell_func(char* s_buf, int* current_line, char* dir){
         print(">", *current_line, 1, 0x0F);
     } 
     else if (strcmp(s_buf, "help") == 0) {
-        print("Command: shutdown ,reboot, clear, echo, mydir, help, clac",
+        print("Command: shutdown ,reboot, clear, echo, mydir, help, clac ,info",
         (*current_line)++, 0, 0x0A);
         print(dir, *current_line, 0, 0x0F);
         print(">", *current_line, 1, 0x0F);

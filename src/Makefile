@@ -22,6 +22,7 @@ READ_O = ../bin/read.o
 WRITE_O = ../bin/write.o
 CALC_O = ../bin/calc.o  
 MYDIR_O = ../bin/mydir.o
+INFO_O = ../bin/info.o
 SHELL_O = ../bin/shell.o
 IMAGE = ../os-image.bin
 # Цель по умолчанию
@@ -35,14 +36,17 @@ $(IMAGE): $(BOOT_BIN) $(KERNEL_BIN)
 $(BOOT_BIN): boot/boot.asm
 	$(AS) -f bin boot/boot.asm -o $(BOOT_BIN)
 
-$(KERNEL_BIN): $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) $(MYDIR_O) $(SHELL_O)
-	$(LD) $(LDFLAGS) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) $(MYDIR_O) $(SHELL_O) -o $(KERNEL_BIN)
+$(KERNEL_BIN): $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) $(MYDIR_O) $(INFO_O) $(SHELL_O)
+	$(LD) $(LDFLAGS) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) $(MYDIR_O) $(INFO_O) $(SHELL_O) -o $(KERNEL_BIN)
 
 $(KERNEL_O): kernel/kernel.c
 	$(CC) $(CFLAGS) -c kernel/kernel.c -o $(KERNEL_O)
 
 $(CALC_O): kernel/func/calc.c
 	$(CC) $(CFLAGS) -c kernel/func/calc.c -o $(CALC_O)
+
+$(INFO_O): kernel/func/info.c
+	$(CC) $(CFLAGS) -c kernel/func/info.c -o $(INFO_O)
 
 $(MYDIR_O): kernel/func/mydir.c
 	$(CC) $(CFLAGS) -c kernel/func/mydir.c -o $(MYDIR_O)
