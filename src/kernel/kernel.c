@@ -1,15 +1,14 @@
-#include "../LIB/com1.h"
-#include "../mlibc/mlibc.h"
-#include "drivers/keyboard.h"
-#include "drivers/vga.h"
-#include "func/shell.h"
-#include "idt.h"
+#include <kernel/drivers/keyboard.h>
+#include <kernel/drivers/vga.h>
+#include <kernel/func/shell.h>
+#include <kernel/interrupts/idt.h>
+#include <lib/com1.h>
+#include <mlibc/mlibc.h>
 
 // Точка входа(если что-то сломалось то здесь)
 void kmain() {
   init_idt();
   clear_screen();
-
 
   print("OTSOS started!", 0, 30, 0x0A);
 

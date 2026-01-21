@@ -1,4 +1,4 @@
-#include "mlibc.h"
+#include <mlibc/mlibc.h>
 
 int strcmp(const char *str1, const char *str2) {
   while (*str1 && (*str1 == *str2)) {

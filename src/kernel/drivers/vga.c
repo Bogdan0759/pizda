@@ -1,6 +1,5 @@
-#include "vga.h"
-#include "../../mlibc/mlibc.h"
-// #include "../../LIB/com1.h"
+#include <kernel/drivers/vga.h>
+#include <mlibc/mlibc.h>
 
 void clear_screen() {
   char *video_memory = (char *)0xb8000;

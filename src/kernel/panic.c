@@ -1,13 +1,7 @@
-#include "../mlibc/mlibc.h"
-#include "../LIB/com1.h"
-#include "drivers/vga.h"
-
-typedef struct {
-  unsigned long long r15, r14, r13, r12, r11, r10, r9, r8;
-  unsigned long long rbp, rdi, rsi, rdx, rcx, rbx, rax;
-  unsigned long long int_no, err_code;
-  unsigned long long rip, cs, rflags, rsp, ss;
-} registers_t;
+#include <kernel/drivers/vga.h>
+#include <kernel/interrupts/idt.h>
+#include <lib/com1.h>
+#include <mlibc/mlibc.h>
 
 static const char *exception_messages[] = {"Division By Zero",
                                            "Debug",
@@ -45,12 +39,20 @@ static const char *exception_messages[] = {"Division By Zero",
 void kernel_panic(registers_t *regs) {
   clear_screen();
 
-  print("!!! KERNEL PANIC !!!", 0, 30, 0x4F); 
-  print(exception_messages[regs->int_no], 2, 0, 0x0F);
+  print("!!! KERNEL PANIC !!!", 0, 30, 0x4F);
+  if (regs->int_no < 32) {
+    print(exception_messages[regs->int_no], 2, 0, 0x0F);
+  } else {
+    print("Unexpected Interrupt", 2, 0, 0x0F);
+  }
 
   com1_printf("\n\r####################################################\n\r");
-  com1_printf("              KERNEL PANIC: %s\n\r",
-              exception_messages[regs->int_no]);
+  if (regs->int_no < 32) {
+    com1_printf("              KERNEL PANIC: %s\n\r",
+                exception_messages[regs->int_no]);
+  } else {
+    com1_printf("              KERNEL PANIC: Unexpected Interrupt\n\r");
+  }
   com1_printf("####################################################\n\r");
   com1_printf("Interrupt: %d (Error Code: %x)\n\r", (int)regs->int_no,
               (int)regs->err_code);
@@ -69,18 +71,11 @@ void kernel_panic(registers_t *regs) {
     __asm__ volatile("mov %%cr2, %0" : "=r"(cr2));
     com1_printf("\n\rPage Fault Address (CR2): %p\n\r", cr2);
     print("Page Fault at:", 4, 0, 0x0F);
-    
   }
 
   com1_printf("\n\rSystem Halted.\n\r");
 
   while (1) {
     __asm__ volatile("cli; hlt");
-  }
-}
-
-void isr_handler(registers_t *regs) {
-  if (regs->int_no < 32) {
-    kernel_panic(regs);
   }
 }

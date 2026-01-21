@@ -3,8 +3,7 @@ LD = ld
 AS = nasm
 QEMU = qemu-system-x86_64
 
-# Добавляем -g для отладочных символов
-CFLAGS = -m64 -ffreestanding -fno-pic -fno-stack-protector -g -O0 -mno-red-zone -mcmodel=kernel
+CFLAGS = -m64 -ffreestanding -fno-pic -fno-stack-protector -g -O0 -mno-red-zone -mcmodel=kernel -I.
 LDFLAGS = -m elf_x86_64 -T linker.ld -Map=../bin/kernel.map
 
 KERNEL_BIN = ../bin/kernel.bin
@@ -29,11 +28,14 @@ SHELL_O = ../bin/shell.o
 COM1_O = ../bin/com1.o
 IDT_ASM_O = ../bin/idt_asm.o
 IDT_C_O = ../bin/idt_c.o
+PIC_O = ../bin/pic_c.o
+HANDLERS_O = ../bin/handlers_c.o
 PANIC_O = ../bin/panic.o
 
 OBJ = $(BOOT_O) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) \
       $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) $(MYDIR_O) \
-      $(INFO_O) $(SHELL_O) $(COM1_O) $(IDT_ASM_O) $(IDT_C_O) $(PANIC_O)
+      $(INFO_O) $(SHELL_O) $(COM1_O) $(IDT_ASM_O) $(IDT_C_O) $(PIC_O) \
+      $(HANDLERS_O) $(PANIC_O)
 
 all: $(ISO_IMAGE)
 
@@ -49,13 +51,19 @@ $(KERNEL_BIN): $(OBJ)
 $(BOOT_O): boot/boot.asm
 	$(AS) -f elf64 -g -F dwarf $< -o $@
 
-$(IDT_ASM_O): kernel/idt.asm
+$(IDT_ASM_O): kernel/interrupts/idt.asm
 	$(AS) -f elf64 -g -F dwarf $< -o $@
 
 $(KERNEL_O): kernel/kernel.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(IDT_C_O): kernel/idt.c
+$(IDT_C_O): kernel/interrupts/idt.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(PIC_O): kernel/interrupts/pic.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(HANDLERS_O): kernel/interrupts/handlers.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(PANIC_O): kernel/panic.c
@@ -97,7 +105,7 @@ $(MYDIR_O): kernel/func/mydir.c
 $(SHELL_O): kernel/func/shell.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(COM1_O): LIB/com1.c
+$(COM1_O): lib/com1.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 run: $(ISO_IMAGE)
