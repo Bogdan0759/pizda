@@ -9,6 +9,7 @@ LDFLAGS = -m elf_x86_64 -T linker.ld -Map=../bin/kernel.map
 KERNEL_BIN = ../bin/kernel.bin
 ISO_IMAGE = ../otsos.iso
 ISODIR = ../isodir
+DISK_IMG = ../bin/disk.img
 
 # Объектные файлы
 BOOT_O = ../bin/boot.o
@@ -32,11 +33,12 @@ PIC_O = ../bin/pic_c.o
 HANDLERS_O = ../bin/handlers_c.o
 PANIC_O = ../bin/panic.o
 MEMORY_O = ../bin/memory.o
+PATA_O = ../bin/pata.o
 
 OBJ = $(BOOT_O) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) \
       $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) $(MYDIR_O) \
       $(INFO_O) $(SHELL_O) $(COM1_O) $(IDT_ASM_O) $(IDT_C_O) $(PIC_O) \
-      $(HANDLERS_O) $(PANIC_O) $(MEMORY_O)
+      $(HANDLERS_O) $(PANIC_O) $(MEMORY_O) $(PATA_O)
 
 all: $(ISO_IMAGE)
 
@@ -71,6 +73,9 @@ $(PANIC_O): kernel/panic.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(MEMORY_O): mlibc/memory.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(PATA_O): kernel/drivers/disk/pata/pata.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(VGA_O): kernel/drivers/vga.c
@@ -112,14 +117,17 @@ $(SHELL_O): kernel/func/shell.c
 $(COM1_O): lib/com1.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-run: $(ISO_IMAGE)
-	$(QEMU) -cdrom $(ISO_IMAGE) -serial stdio
+$(DISK_IMG):
+	dd if=/dev/zero of=$(DISK_IMG) bs=1M count=10
 
-debug: $(ISO_IMAGE)
+run: $(ISO_IMAGE) $(DISK_IMG)
+	$(QEMU) -cdrom $(ISO_IMAGE) -drive file=$(DISK_IMG),format=raw,index=0,media=disk -serial stdio
+
+debug: $(ISO_IMAGE) $(DISK_IMG)
 	@echo "Starting QEMU in debug mode..."
 	@echo "You can use: addr2line -e ../bin/kernel.bin <address>"
-	$(QEMU) -cdrom $(ISO_IMAGE) -serial stdio -d int,cpu_reset -no-reboot
+	$(QEMU) -cdrom $(ISO_IMAGE) -drive file=$(DISK_IMG),format=raw,index=0,media=disk -serial stdio -d int,cpu_reset -no-reboot
 
 clean:
-	rm -f ../bin/*.o ../bin/kernel.bin ../bin/kernel.map $(ISO_IMAGE)
+	rm -f ../bin/*.o ../bin/kernel.bin ../bin/kernel.map $(ISO_IMAGE) $(DISK_IMG)
 	rm -rf $(ISODIR)/boot/kernel.bin

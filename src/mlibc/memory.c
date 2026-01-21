@@ -1,16 +1,15 @@
 #include <lib/com1.h>
 #include <mlibc/memory.h>
 
-extern char kernel_end; 
-
-#define HEAP_SIZE (128 * 1024) 
+extern char kernel_end;
+#define HEAP_SIZE (128 * 1024)
 static char *heap_start = 0;
-static char *heap_end = 0;
 
 typedef struct header {
   struct header *next;
   unsigned long size;
-  int is_free;
+  long is_free;
+  long reserved;
 } header_t;
 
 static header_t *free_list = 0;
@@ -18,14 +17,15 @@ static header_t *free_list = 0;
 void init_heap() {
   heap_start = (char *)&kernel_end;
   heap_start = (char *)(((unsigned long)heap_start + 15) & ~15);
-  heap_end = heap_start + HEAP_SIZE;
 
   free_list = (header_t *)heap_start;
   free_list->size = HEAP_SIZE - sizeof(header_t);
   free_list->next = 0;
   free_list->is_free = 1;
 
-  com1_printf("Heap initialized at %p, size %d bytes\n", heap_start, HEAP_SIZE);
+  com1_printf("Heap initialized at %p (header size: %d)\n", heap_start,
+              (int)sizeof(header_t));
+  com1_printf("Free block size: %d\n", (int)free_list->size);
 }
 
 void *kmalloc(unsigned long size) {
@@ -37,7 +37,7 @@ void *kmalloc(unsigned long size) {
   header_t *current = free_list;
   while (current) {
     if (current->is_free && current->size >= size) {
-      if (current->size > size + sizeof(header_t) + 16) {
+      if (current->size >= size + sizeof(header_t) + 16) {
         header_t *new_block =
             (header_t *)((char *)current + sizeof(header_t) + size);
         new_block->size = current->size - size - sizeof(header_t);
@@ -53,7 +53,11 @@ void *kmalloc(unsigned long size) {
     current = current->next;
   }
 
-  com1_printf("KMALLOC FAILED for size %d!\n", (int)size);
+  com1_printf("KMALLOC FAILED! Request size: %d\n", (int)size);
+  if (free_list) {
+    com1_printf("First block: free=%d, size=%d\n", (int)free_list->is_free,
+                (int)free_list->size);
+  }
   return 0;
 }
 
@@ -65,8 +69,8 @@ void kfree(void *ptr) {
   header->is_free = 1;
 
   header_t *current = free_list;
-  while (current) {
-    if (current->is_free && current->next && current->next->is_free) {
+  while (current && current->next) {
+    if (current->is_free && current->next->is_free) {
       current->size += current->next->size + sizeof(header_t);
       current->next = current->next->next;
       continue;
@@ -79,7 +83,7 @@ void *kcalloc(unsigned long nmemb, unsigned long size) {
   unsigned long total = nmemb * size;
   void *ptr = kmalloc(total);
   if (ptr) {
-    char *p = (char *)ptr;
+    unsigned char *p = (unsigned char *)ptr;
     for (unsigned long i = 0; i < total; i++)
       p[i] = 0;
   }

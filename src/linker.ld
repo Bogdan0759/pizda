@@ -13,6 +13,10 @@ SECTIONS
 
     .rodata : { *(.rodata) }
     .data   : { *(.data) }
-    .bss    : { *(.bss) }
+    .bss    : { 
+        *(.bss*) 
+        *(COMMON) 
+    }
+    . = ALIGN(4096);
     kernel_end = .;
 }

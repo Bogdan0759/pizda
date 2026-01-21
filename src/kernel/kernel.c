@@ -1,3 +1,4 @@
+#include <kernel/drivers/disk/pata/pata.h>
 #include <kernel/drivers/keyboard.h>
 #include <kernel/drivers/vga.h>
 #include <kernel/func/shell.h>
@@ -9,14 +10,36 @@
 void kmain() {
   init_idt();
   init_heap();
+  pata_identify();
+
+  // ТЕСТ ЗАПИСИ И ЧТЕНИЯ ДИСКА (DISK TEST)
+  com1_printf("Testing Disk R/W...\n");
+  unsigned char *disk_buf = (unsigned char *)kmalloc(512);
+  if (disk_buf) {
+    // Подготовим данные
+    for (int i = 0; i < 512; i++)
+      disk_buf[i] = 0;
+    char *msg = "DISK_OK: SYSTEM_READY";
+    for (int i = 0; msg[i] != '\0'; i++)
+      disk_buf[i] = msg[i];
+
+    com1_printf("Writing to Sector 0...\n");
+    pata_write_sector(0, disk_buf);
+
+    com1_printf("Clearing buffer and reading back...\n");
+    for (int i = 0; i < 512; i++)
+      disk_buf[i] = 0;
+    pata_read_sector(0, disk_buf);
+
+    com1_printf("Sector 0 content: %s\n", (char *)disk_buf);
+    kfree(disk_buf);
+  }
+
   clear_screen();
 
   print("OTSOS started!", 0, 30, 0x0A);
 
   com1_init();
-
-  
- 
 
   com1_write_string("OTSOS started at address ");
   com1_write_hex_qword((u64)kmain);
