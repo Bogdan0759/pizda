@@ -1,14 +1,17 @@
-ENTRY(_start)
-OUTPUT_FORMAT(binary)
+ENTRY(start)
+OUTPUT_FORMAT(elf64-x86-64)
+
 SECTIONS
 {
-    . = 0x100000;
-    .text : {
-        *(.text.boot)
+    . = 1M;
+
+    .text :
+    {
+        *(.multiboot)
         *(.text)
     }
-    .rodata : { *(.rodata) }
-    .data : { *(.data) }
-    .bss : { *(.bss) }
-}
 
+    .rodata : { *(.rodata) }
+    .data   : { *(.data) }
+    .bss    : { *(.bss) }
+}

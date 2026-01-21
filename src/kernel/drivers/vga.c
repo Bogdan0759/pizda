@@ -1,5 +1,6 @@
 #include "vga.h"
 #include "../../mlibc/mlibc.h"
+#include "../../LIB/com1.h"
 // Тупо очистка
 void clear_screen() {
     char* video_memory = (char*) 0xb8000;
@@ -11,6 +12,12 @@ void clear_screen() {
 
 // Попытка сделать print
 void print(char* message, int row, int col, char color) {
+    com1_write_string("{VGA DRIVER}: called print at row ");
+    com1_write_hex_dword((u32)row); 
+    com1_write_string(" col ");
+    com1_write_hex_dword((u32)col); 
+    com1_newline();
+    
     char* video_memory = (char*) 0xb8000;
     int offset = (row * 80 + col) * 2;
     int i = 0;

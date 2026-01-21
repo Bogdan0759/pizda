@@ -1,16 +1,16 @@
-# Переменные для инструментов
 CC = gcc
 LD = ld
 AS = nasm
 QEMU = qemu-system-x86_64
 
-# Флаги компиляции
 CFLAGS = -m64 -ffreestanding -fno-pic -fno-stack-protector -O0 -mno-red-zone -mcmodel=kernel
 LDFLAGS = -m elf_x86_64 -T linker.ld
 
-# Имена файлов
-BOOT_BIN = ../bin/boot.bin
 KERNEL_BIN = ../bin/kernel.bin
+ISO_IMAGE = ../otsos.iso
+ISODIR = ../isodir
+
+BOOT_O = ../bin/boot.o
 KERNEL_O = ../bin/kernel.o
 VGA_O = ../bin/vga.o
 KEYBOARD_O = ../bin/keyboard.o
@@ -24,64 +24,71 @@ CALC_O = ../bin/calc.o
 MYDIR_O = ../bin/mydir.o
 INFO_O = ../bin/info.o
 SHELL_O = ../bin/shell.o
-IMAGE = ../os-image.bin
-# Цель по умолчанию
-all: $(IMAGE)
+COM1_O = ../bin/com1.o
 
-# Как собрать образ ОС
-$(IMAGE): $(BOOT_BIN) $(KERNEL_BIN)
-	cat $(BOOT_BIN) $(KERNEL_BIN) > $(IMAGE)
+OBJ = $(BOOT_O) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) \
+      $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) $(MYDIR_O) \
+      $(INFO_O) $(SHELL_O) $(COM1_O)
 
-# Как собрать загрузчик
-$(BOOT_BIN): boot/boot.asm
-	$(AS) -f bin boot/boot.asm -o $(BOOT_BIN)
+all: $(ISO_IMAGE)
 
-$(KERNEL_BIN): $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) $(MYDIR_O) $(INFO_O) $(SHELL_O)
-	$(LD) $(LDFLAGS) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) $(MYDIR_O) $(INFO_O) $(SHELL_O) -o $(KERNEL_BIN)
+$(ISO_IMAGE): $(KERNEL_BIN)
+	mkdir -p $(ISODIR)/boot/grub
+	cp $(KERNEL_BIN) $(ISODIR)/boot/kernel.bin
+	cp $(ISODIR)/boot/grub/grub.cfg $(ISODIR)/boot/grub/grub.cfg || echo 'menuentry "OTSOS" { multiboot /boot/kernel.bin }' > $(ISODIR)/boot/grub/grub.cfg
+	grub-mkrescue -o $(ISO_IMAGE) $(ISODIR)
+
+$(KERNEL_BIN): $(OBJ)
+	$(LD) $(LDFLAGS) $(OBJ) -o $@
+
+$(BOOT_O): boot/boot.asm
+	$(AS) -f elf64 $< -o $@
 
 $(KERNEL_O): kernel/kernel.c
-	$(CC) $(CFLAGS) -c kernel/kernel.c -o $(KERNEL_O)
-
-$(CALC_O): kernel/func/calc.c
-	$(CC) $(CFLAGS) -c kernel/func/calc.c -o $(CALC_O)
-
-$(INFO_O): kernel/func/info.c
-	$(CC) $(CFLAGS) -c kernel/func/info.c -o $(INFO_O)
-
-$(MYDIR_O): kernel/func/mydir.c
-	$(CC) $(CFLAGS) -c kernel/func/mydir.c -o $(MYDIR_O)
-
-$(SHELL_O): kernel/func/shell.c
-	$(CC) $(CFLAGS) -c kernel/func/shell.c -o $(SHELL_O)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(VGA_O): kernel/drivers/vga.c
-	$(CC) $(CFLAGS) -c kernel/drivers/vga.c -o $(VGA_O)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(KEYBOARD_O): kernel/drivers/keyboard.c
-	$(CC) $(CFLAGS) -c kernel/drivers/keyboard.c -o $(KEYBOARD_O)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(PRINTF_O): mlibc/printf.s
-	$(CC) -c mlibc/printf.s -o $(PRINTF_O)
+	$(CC) -c $< -o $@
 
 $(STRING_O): mlibc/string.c
-	$(CC) $(CFLAGS) -c mlibc/string.c -o $(STRING_O)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(ITOA_O): mlibc/itoa.s
-	$(CC) -c mlibc/itoa.s -o $(ITOA_O)
+	$(CC) -c $< -o $@
 
 $(HARDWARE_O): mlibc/hardware.asm
-	$(AS) -f elf64 mlibc/hardware.asm -o $(HARDWARE_O) -D__x86_64__
+	$(AS) -f elf64 $< -o $@ -D__x86_64__
 
 $(READ_O): kernel/memory/read.s
-	$(CC) -c kernel/memory/read.s -o $(READ_O)
+	$(CC) -c $< -o $@
 
 $(WRITE_O): kernel/memory/write.s
-	$(CC) -c kernel/memory/write.s -o $(WRITE_O)
+	$(CC) -c $< -o $@
 
-# Команда для запуска в QEMU
-run: $(IMAGE)
-	$(QEMU) -drive format=raw,file=$(IMAGE)
+$(CALC_O): kernel/func/calc.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-# Команда для очистки проекта
+$(INFO_O): kernel/func/info.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(MYDIR_O): kernel/func/mydir.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_O): kernel/func/shell.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(COM1_O): LIB/com1.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+run: $(ISO_IMAGE)
+	$(QEMU) -cdrom $(ISO_IMAGE) -serial stdio
+
 clean:
-	rm -f ../bin/*.o ../bin/*.bin $(IMAGE)
+	rm -f ../bin/*.o $(KERNEL_BIN) $(ISO_IMAGE)
+	rm -rf $(ISODIR)/boot/kernel.bin
