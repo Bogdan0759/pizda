@@ -31,11 +31,12 @@ IDT_C_O = ../bin/idt_c.o
 PIC_O = ../bin/pic_c.o
 HANDLERS_O = ../bin/handlers_c.o
 PANIC_O = ../bin/panic.o
+MEMORY_O = ../bin/memory.o
 
 OBJ = $(BOOT_O) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) \
       $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) $(MYDIR_O) \
       $(INFO_O) $(SHELL_O) $(COM1_O) $(IDT_ASM_O) $(IDT_C_O) $(PIC_O) \
-      $(HANDLERS_O) $(PANIC_O)
+      $(HANDLERS_O) $(PANIC_O) $(MEMORY_O)
 
 all: $(ISO_IMAGE)
 
@@ -67,6 +68,9 @@ $(HANDLERS_O): kernel/interrupts/handlers.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(PANIC_O): kernel/panic.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(MEMORY_O): mlibc/memory.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(VGA_O): kernel/drivers/vga.c

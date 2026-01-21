@@ -14,4 +14,5 @@ SECTIONS
     .rodata : { *(.rodata) }
     .data   : { *(.data) }
     .bss    : { *(.bss) }
+    kernel_end = .;
 }

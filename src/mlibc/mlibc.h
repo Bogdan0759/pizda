@@ -8,4 +8,6 @@ void printf(char *format, ...);
 void outb(unsigned short port, unsigned char data);
 unsigned char inb(unsigned short port);
 
+#include <mlibc/memory.h>
+
 #endif
