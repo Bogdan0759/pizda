@@ -3,13 +3,15 @@ LD = ld
 AS = nasm
 QEMU = qemu-system-x86_64
 
-CFLAGS = -m64 -ffreestanding -fno-pic -fno-stack-protector -O0 -mno-red-zone -mcmodel=kernel
-LDFLAGS = -m elf_x86_64 -T linker.ld
+# Добавляем -g для отладочных символов
+CFLAGS = -m64 -ffreestanding -fno-pic -fno-stack-protector -g -O0 -mno-red-zone -mcmodel=kernel
+LDFLAGS = -m elf_x86_64 -T linker.ld -Map=../bin/kernel.map
 
 KERNEL_BIN = ../bin/kernel.bin
 ISO_IMAGE = ../otsos.iso
 ISODIR = ../isodir
 
+# Объектные файлы
 BOOT_O = ../bin/boot.o
 KERNEL_O = ../bin/kernel.o
 VGA_O = ../bin/vga.o
@@ -25,10 +27,13 @@ MYDIR_O = ../bin/mydir.o
 INFO_O = ../bin/info.o
 SHELL_O = ../bin/shell.o
 COM1_O = ../bin/com1.o
+IDT_ASM_O = ../bin/idt_asm.o
+IDT_C_O = ../bin/idt_c.o
+PANIC_O = ../bin/panic.o
 
 OBJ = $(BOOT_O) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) \
       $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) $(MYDIR_O) \
-      $(INFO_O) $(SHELL_O) $(COM1_O)
+      $(INFO_O) $(SHELL_O) $(COM1_O) $(IDT_ASM_O) $(IDT_C_O) $(PANIC_O)
 
 all: $(ISO_IMAGE)
 
@@ -42,9 +47,18 @@ $(KERNEL_BIN): $(OBJ)
 	$(LD) $(LDFLAGS) $(OBJ) -o $@
 
 $(BOOT_O): boot/boot.asm
-	$(AS) -f elf64 $< -o $@
+	$(AS) -f elf64 -g -F dwarf $< -o $@
+
+$(IDT_ASM_O): kernel/idt.asm
+	$(AS) -f elf64 -g -F dwarf $< -o $@
 
 $(KERNEL_O): kernel/kernel.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(IDT_C_O): kernel/idt.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(PANIC_O): kernel/panic.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(VGA_O): kernel/drivers/vga.c
@@ -63,7 +77,7 @@ $(ITOA_O): mlibc/itoa.s
 	$(CC) -c $< -o $@
 
 $(HARDWARE_O): mlibc/hardware.asm
-	$(AS) -f elf64 $< -o $@ -D__x86_64__
+	$(AS) -f elf64 -g -F dwarf $< -o $@ -D__x86_64__
 
 $(READ_O): kernel/memory/read.s
 	$(CC) -c $< -o $@
@@ -89,6 +103,11 @@ $(COM1_O): LIB/com1.c
 run: $(ISO_IMAGE)
 	$(QEMU) -cdrom $(ISO_IMAGE) -serial stdio
 
+debug: $(ISO_IMAGE)
+	@echo "Starting QEMU in debug mode..."
+	@echo "You can use: addr2line -e ../bin/kernel.bin <address>"
+	$(QEMU) -cdrom $(ISO_IMAGE) -serial stdio -d int,cpu_reset -no-reboot
+
 clean:
-	rm -f ../bin/*.o $(KERNEL_BIN) $(ISO_IMAGE)
+	rm -f ../bin/*.o ../bin/kernel.bin ../bin/kernel.map $(ISO_IMAGE)
 	rm -rf $(ISODIR)/boot/kernel.bin

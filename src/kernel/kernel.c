@@ -3,16 +3,20 @@
 #include "drivers/keyboard.h"
 #include "drivers/vga.h"
 #include "func/shell.h"
+#include "idt.h"
+
 // Точка входа(если что-то сломалось то здесь)
 void kmain() {
+  init_idt();
   clear_screen();
+
+
   print("OTSOS started!", 0, 30, 0x0A);
 
   com1_init();
   com1_write_string("OTSOS started at address ");
   com1_write_hex_qword((u64)kmain);
   com1_newline();
-  
 
   print("There's nothing here yet =)", 3, 0, 0x0F);
 
