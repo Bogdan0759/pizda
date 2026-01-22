@@ -10,8 +10,7 @@ KERNEL_BIN = ../bin/kernel.bin
 ISO_IMAGE = ../otsos.iso
 ISODIR = ../isodir
 DISK_IMG = ../bin/disk.img
-
-# Объектные файлы
+# object files
 BOOT_O = ../bin/boot.o
 KERNEL_O = ../bin/kernel.o
 VGA_O = ../bin/vga.o
@@ -20,8 +19,6 @@ PRINTF_O = ../bin/printf.o
 STRING_O = ../bin/string.o
 ITOA_O = ../bin/itoa.o
 HARDWARE_O = ../bin/hardware.o
-READ_O = ../bin/read.o
-WRITE_O = ../bin/write.o
 CALC_O = ../bin/calc.o  
 MYDIR_O = ../bin/mydir.o
 INFO_O = ../bin/info.o
@@ -36,7 +33,7 @@ MEMORY_O = ../bin/memory.o
 PATA_O = ../bin/pata.o
 
 OBJ = $(BOOT_O) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) \
-      $(ITOA_O) $(HARDWARE_O) $(READ_O) $(WRITE_O) $(CALC_O) $(MYDIR_O) \
+      $(ITOA_O) $(HARDWARE_O) $(CALC_O) $(MYDIR_O) \
       $(INFO_O) $(SHELL_O) $(COM1_O) $(IDT_ASM_O) $(IDT_C_O) $(PIC_O) \
       $(HANDLERS_O) $(PANIC_O) $(MEMORY_O) $(PATA_O)
 
@@ -96,11 +93,7 @@ $(ITOA_O): mlibc/itoa.s
 $(HARDWARE_O): mlibc/hardware.asm
 	$(AS) -f elf64 -g -F dwarf $< -o $@ -D__x86_64__
 
-$(READ_O): kernel/memory/read.s
-	$(CC) -c $< -o $@
 
-$(WRITE_O): kernel/memory/write.s
-	$(CC) -c $< -o $@
 
 $(CALC_O): kernel/func/calc.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -124,8 +117,6 @@ run: $(ISO_IMAGE) $(DISK_IMG)
 	$(QEMU) -cdrom $(ISO_IMAGE) -drive file=$(DISK_IMG),format=raw,index=0,media=disk -serial stdio
 
 debug: $(ISO_IMAGE) $(DISK_IMG)
-	@echo "Starting QEMU in debug mode..."
-	@echo "You can use: addr2line -e ../bin/kernel.bin <address>"
 	$(QEMU) -cdrom $(ISO_IMAGE) -drive file=$(DISK_IMG),format=raw,index=0,media=disk -serial stdio -d int,cpu_reset -no-reboot
 
 clean:
