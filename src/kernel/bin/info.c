@@ -1,4 +1,4 @@
-#include <kernel/func/info.h>
+#include <kernel/bin/info.h>
 
 void get_cpu_model(char *model) {
     unsigned int eax, ebx, ecx, edx;

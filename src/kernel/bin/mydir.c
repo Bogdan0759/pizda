@@ -1,5 +1,5 @@
 #include <kernel/drivers/vga.h>
-#include <kernel/func/mydir.h>
+#include <kernel/bin/mydir.h>
 
 void mydir(char *dir, int *current_line) {
   print("Your dir: ", (*current_line)++, 0, 0x0F);

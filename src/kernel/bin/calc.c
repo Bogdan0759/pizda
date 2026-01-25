@@ -1,6 +1,6 @@
 #include <kernel/drivers/keyboard.h>
 #include <kernel/drivers/vga.h>
-#include <kernel/func/calc.h>
+#include <kernel/bin/calc.h>
 #include <mlibc/mlibc.h>
 
 void calc(char *s_buf, int *current_line, char *dir) {

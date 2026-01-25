@@ -95,16 +95,16 @@ $(HARDWARE_O): mlibc/hardware.asm
 
 
 
-$(CALC_O): kernel/func/calc.c
+$(CALC_O): kernel/bin/calc.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(INFO_O): kernel/func/info.c
+$(INFO_O): kernel/bin/info.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(MYDIR_O): kernel/func/mydir.c
+$(MYDIR_O): kernel/bin/mydir.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_O): kernel/func/shell.c
+$(SHELL_O): kernel/bin/shell.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(COM1_O): lib/com1.c

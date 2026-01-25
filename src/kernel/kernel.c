@@ -1,7 +1,7 @@
 #include <kernel/drivers/disk/pata/pata.h>
 #include <kernel/drivers/keyboard.h>
 #include <kernel/drivers/vga.h>
-#include <kernel/func/shell.h>
+#include <kernel/bin/shell.h>
 #include <kernel/interrupts/idt.h>
 #include <lib/com1.h>
 #include <mlibc/mlibc.h>
