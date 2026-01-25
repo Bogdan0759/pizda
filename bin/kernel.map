@@ -17,230 +17,229 @@
 
                 0x0000000000100000                . = 0x100000
 
-.text           0x0000000000100000     0x2f07
+.text           0x0000000000100000     0x2dd7
  *(.multiboot)
  .multiboot     0x0000000000100000        0xc ../bin/boot.o
  *(.text)
  *fill*         0x000000000010000c        0x4 
  .text          0x0000000000100010       0xd2 ../bin/boot.o
                 0x0000000000100010                start
- .text          0x00000000001000e2      0x24d ../bin/kernel.o
+ .text          0x00000000001000e2      0x125 ../bin/kernel.o
                 0x00000000001000e2                kmain
- .text          0x000000000010032f      0x162 ../bin/vga.o
-                0x000000000010032f                clear_screen
-                0x000000000010037c                print
-                0x000000000010041e                update_cursor
- .text          0x0000000000100491      0x490 ../bin/keyboard.o
-                0x0000000000100491                handle_keyboard
-                0x00000000001006e0                scanf
- *fill*         0x0000000000100921        0xf 
- .text          0x0000000000100930      0x478 ../bin/printf.o
-                0x0000000000100930                printf
- .text          0x0000000000100da8       0xca ../bin/string.o
-                0x0000000000100da8                strcmp
-                0x0000000000100dfb                atoi
- *fill*         0x0000000000100e72        0xe 
- .text          0x0000000000100e80       0x87 ../bin/itoa.o
-                0x0000000000100e80                itoa
- *fill*         0x0000000000100f07        0x9 
- .text          0x0000000000100f10       0x40 ../bin/hardware.o
-                0x0000000000100f10                inb
-                0x0000000000100f17                outb
-                0x0000000000100f1f                inw
-                0x0000000000100f27                outw
-                0x0000000000100f30                insw
-                0x0000000000100f40                outsw
- .text          0x0000000000100f50      0x36e ../bin/calc.o
-                0x0000000000100f50                calc
- .text          0x00000000001012be       0x93 ../bin/mydir.o
-                0x00000000001012be                mydir
- .text          0x0000000000101351       0xf2 ../bin/info.o
-                0x0000000000101351                get_cpu_model
-                0x00000000001013ed                get_cpu_vendor
- .text          0x0000000000101443      0x3a0 ../bin/shell.o
-                0x0000000000101443                shell_func
- .text          0x00000000001017e3      0x684 ../bin/com1.o
-                0x0000000000101820                com1_init
-                0x0000000000101890                com1_write_byte
-                0x00000000001018c5                com1_write_string
-                0x00000000001018fb                com1_write_hex_byte
-                0x0000000000101961                com1_write_hex_word
-                0x0000000000101992                com1_write_hex_dword
-                0x00000000001019bd                com1_write_hex_qword
-                0x00000000001019e6                com1_newline
-                0x0000000000101a01                com1_read_byte
-                0x0000000000101a26                com1_has_data
-                0x0000000000101a3c                com1_write_dec
-                0x0000000000101aed                com1_printf
- *fill*         0x0000000000101e67        0x9 
- .text          0x0000000000101e70      0x217 ../bin/idt_asm.o
-                0x0000000000101ee8                isr_stub_0
-                0x0000000000101eee                isr_stub_1
-                0x0000000000101ef7                isr_stub_2
-                0x0000000000101f00                isr_stub_3
-                0x0000000000101f09                isr_stub_4
-                0x0000000000101f12                isr_stub_5
-                0x0000000000101f1b                isr_stub_6
-                0x0000000000101f24                isr_stub_7
-                0x0000000000101f2d                isr_stub_8
-                0x0000000000101f34                isr_stub_9
-                0x0000000000101f3d                isr_stub_10
-                0x0000000000101f44                isr_stub_11
-                0x0000000000101f4b                isr_stub_12
-                0x0000000000101f52                isr_stub_13
-                0x0000000000101f59                isr_stub_14
-                0x0000000000101f60                isr_stub_15
-                0x0000000000101f69                isr_stub_16
-                0x0000000000101f72                isr_stub_17
-                0x0000000000101f79                isr_stub_18
-                0x0000000000101f82                isr_stub_19
-                0x0000000000101f8b                isr_stub_20
-                0x0000000000101f94                isr_stub_21
-                0x0000000000101f9b                isr_stub_22
-                0x0000000000101fa4                isr_stub_23
-                0x0000000000101fad                isr_stub_24
-                0x0000000000101fb6                isr_stub_25
-                0x0000000000101fbf                isr_stub_26
-                0x0000000000101fc8                isr_stub_27
-                0x0000000000101fd1                isr_stub_28
-                0x0000000000101fda                isr_stub_29
-                0x0000000000101fe3                isr_stub_30
-                0x0000000000101fea                isr_stub_31
-                0x0000000000101ff3                irq_stub_0
-                0x0000000000101ffc                irq_stub_1
-                0x0000000000102005                irq_stub_2
-                0x000000000010200e                irq_stub_3
-                0x0000000000102017                irq_stub_4
-                0x0000000000102020                irq_stub_5
-                0x0000000000102029                irq_stub_6
-                0x0000000000102032                irq_stub_7
-                0x000000000010203b                irq_stub_8
-                0x0000000000102044                irq_stub_9
-                0x000000000010204d                irq_stub_10
-                0x0000000000102056                irq_stub_11
-                0x000000000010205f                irq_stub_12
-                0x0000000000102068                irq_stub_13
-                0x0000000000102071                irq_stub_14
-                0x000000000010207a                irq_stub_15
-                0x0000000000102083                load_idt
- .text          0x0000000000102087      0x4a8 ../bin/idt_c.o
-                0x0000000000102087                idt_set_gate
-                0x0000000000102135                init_idt
- .text          0x000000000010252f       0xfd ../bin/pic_c.o
-                0x000000000010252f                pic_remap
-                0x00000000001025f8                pic_send_eoi
- .text          0x000000000010262c       0x5a ../bin/handlers_c.o
-                0x000000000010262c                isr_handler
-                0x0000000000102647                irq_handler
- .text          0x0000000000102686      0x2c3 ../bin/panic.o
-                0x0000000000102686                kernel_panic
- .text          0x0000000000102949      0x311 ../bin/memory.o
-                0x0000000000102949                init_heap
-                0x00000000001029e9                kmalloc
-                0x0000000000102b40                kfree
-                0x0000000000102bf1                kcalloc
- .text          0x0000000000102c5a      0x2ad ../bin/pata.o
-                0x0000000000102c8e                pata_identify
-                0x0000000000102d5a                pata_read_sector
-                0x0000000000102e24                pata_write_sector
+ .text          0x0000000000100207      0x162 ../bin/vga.o
+                0x0000000000100207                clear_screen
+                0x0000000000100254                print
+                0x00000000001002f6                update_cursor
+ .text          0x0000000000100369      0x490 ../bin/keyboard.o
+                0x0000000000100369                handle_keyboard
+                0x00000000001005b8                scanf
+ *fill*         0x00000000001007f9        0x7 
+ .text          0x0000000000100800      0x478 ../bin/printf.o
+                0x0000000000100800                printf
+ .text          0x0000000000100c78       0xca ../bin/string.o
+                0x0000000000100c78                strcmp
+                0x0000000000100ccb                atoi
+ *fill*         0x0000000000100d42        0xe 
+ .text          0x0000000000100d50       0x87 ../bin/itoa.o
+                0x0000000000100d50                itoa
+ *fill*         0x0000000000100dd7        0x9 
+ .text          0x0000000000100de0       0x40 ../bin/hardware.o
+                0x0000000000100de0                inb
+                0x0000000000100de7                outb
+                0x0000000000100def                inw
+                0x0000000000100df7                outw
+                0x0000000000100e00                insw
+                0x0000000000100e10                outsw
+ .text          0x0000000000100e20      0x36e ../bin/calc.o
+                0x0000000000100e20                calc
+ .text          0x000000000010118e       0x93 ../bin/mydir.o
+                0x000000000010118e                mydir
+ .text          0x0000000000101221       0xf2 ../bin/info.o
+                0x0000000000101221                get_cpu_model
+                0x00000000001012bd                get_cpu_vendor
+ .text          0x0000000000101313      0x3a0 ../bin/shell.o
+                0x0000000000101313                shell_func
+ .text          0x00000000001016b3      0x684 ../bin/com1.o
+                0x00000000001016f0                com1_init
+                0x0000000000101760                com1_write_byte
+                0x0000000000101795                com1_write_string
+                0x00000000001017cb                com1_write_hex_byte
+                0x0000000000101831                com1_write_hex_word
+                0x0000000000101862                com1_write_hex_dword
+                0x000000000010188d                com1_write_hex_qword
+                0x00000000001018b6                com1_newline
+                0x00000000001018d1                com1_read_byte
+                0x00000000001018f6                com1_has_data
+                0x000000000010190c                com1_write_dec
+                0x00000000001019bd                com1_printf
+ *fill*         0x0000000000101d37        0x9 
+ .text          0x0000000000101d40      0x217 ../bin/idt_asm.o
+                0x0000000000101db8                isr_stub_0
+                0x0000000000101dbe                isr_stub_1
+                0x0000000000101dc7                isr_stub_2
+                0x0000000000101dd0                isr_stub_3
+                0x0000000000101dd9                isr_stub_4
+                0x0000000000101de2                isr_stub_5
+                0x0000000000101deb                isr_stub_6
+                0x0000000000101df4                isr_stub_7
+                0x0000000000101dfd                isr_stub_8
+                0x0000000000101e04                isr_stub_9
+                0x0000000000101e0d                isr_stub_10
+                0x0000000000101e14                isr_stub_11
+                0x0000000000101e1b                isr_stub_12
+                0x0000000000101e22                isr_stub_13
+                0x0000000000101e29                isr_stub_14
+                0x0000000000101e30                isr_stub_15
+                0x0000000000101e39                isr_stub_16
+                0x0000000000101e42                isr_stub_17
+                0x0000000000101e49                isr_stub_18
+                0x0000000000101e52                isr_stub_19
+                0x0000000000101e5b                isr_stub_20
+                0x0000000000101e64                isr_stub_21
+                0x0000000000101e6b                isr_stub_22
+                0x0000000000101e74                isr_stub_23
+                0x0000000000101e7d                isr_stub_24
+                0x0000000000101e86                isr_stub_25
+                0x0000000000101e8f                isr_stub_26
+                0x0000000000101e98                isr_stub_27
+                0x0000000000101ea1                isr_stub_28
+                0x0000000000101eaa                isr_stub_29
+                0x0000000000101eb3                isr_stub_30
+                0x0000000000101eba                isr_stub_31
+                0x0000000000101ec3                irq_stub_0
+                0x0000000000101ecc                irq_stub_1
+                0x0000000000101ed5                irq_stub_2
+                0x0000000000101ede                irq_stub_3
+                0x0000000000101ee7                irq_stub_4
+                0x0000000000101ef0                irq_stub_5
+                0x0000000000101ef9                irq_stub_6
+                0x0000000000101f02                irq_stub_7
+                0x0000000000101f0b                irq_stub_8
+                0x0000000000101f14                irq_stub_9
+                0x0000000000101f1d                irq_stub_10
+                0x0000000000101f26                irq_stub_11
+                0x0000000000101f2f                irq_stub_12
+                0x0000000000101f38                irq_stub_13
+                0x0000000000101f41                irq_stub_14
+                0x0000000000101f4a                irq_stub_15
+                0x0000000000101f53                load_idt
+ .text          0x0000000000101f57      0x4a8 ../bin/idt_c.o
+                0x0000000000101f57                idt_set_gate
+                0x0000000000102005                init_idt
+ .text          0x00000000001023ff       0xfd ../bin/pic_c.o
+                0x00000000001023ff                pic_remap
+                0x00000000001024c8                pic_send_eoi
+ .text          0x00000000001024fc       0x5a ../bin/handlers_c.o
+                0x00000000001024fc                isr_handler
+                0x0000000000102517                irq_handler
+ .text          0x0000000000102556      0x2c3 ../bin/panic.o
+                0x0000000000102556                kernel_panic
+ .text          0x0000000000102819      0x311 ../bin/memory.o
+                0x0000000000102819                init_heap
+                0x00000000001028b9                kmalloc
+                0x0000000000102a10                kfree
+                0x0000000000102ac1                kcalloc
+ .text          0x0000000000102b2a      0x2ad ../bin/pata.o
+                0x0000000000102b5e                pata_identify
+                0x0000000000102c2a                pata_read_sector
+                0x0000000000102cf4                pata_write_sector
 
-.iplt           0x0000000000102f07        0x0
- .iplt          0x0000000000102f07        0x0 ../bin/boot.o
+.iplt           0x0000000000102dd7        0x0
+ .iplt          0x0000000000102dd7        0x0 ../bin/boot.o
 
-.rodata         0x0000000000102f08      0x7c6
+.rodata         0x0000000000102dd8      0x73e
  *(.rodata)
- .rodata        0x0000000000102f08       0x1a ../bin/boot.o
- *fill*         0x0000000000102f22        0x6 
- .rodata        0x0000000000102f28       0xcc ../bin/kernel.o
- .rodata        0x0000000000102ff4        0x2 ../bin/keyboard.o
- *fill*         0x0000000000102ff6        0x2 
- .rodata        0x0000000000102ff8       0xb0 ../bin/printf.o
- .rodata        0x00000000001030a8       0x40 ../bin/calc.o
- .rodata        0x00000000001030e8        0xd ../bin/mydir.o
- *fill*         0x00000000001030f5        0x3 
- .rodata        0x00000000001030f8       0x7d ../bin/shell.o
- *fill*         0x0000000000103175        0x3 
- .rodata        0x0000000000103178       0xb8 ../bin/com1.o
- .rodata        0x0000000000103230      0x3b3 ../bin/panic.o
- *fill*         0x00000000001035e3        0x5 
- .rodata        0x00000000001035e8       0x87 ../bin/memory.o
- *fill*         0x000000000010366f        0x1 
- .rodata        0x0000000000103670       0x5e ../bin/pata.o
+ .rodata        0x0000000000102dd8       0x1a ../bin/boot.o
+ .rodata        0x0000000000102df2       0x49 ../bin/kernel.o
+ .rodata        0x0000000000102e3b        0x2 ../bin/keyboard.o
+ *fill*         0x0000000000102e3d        0x3 
+ .rodata        0x0000000000102e40       0xb0 ../bin/printf.o
+ .rodata        0x0000000000102ef0       0x40 ../bin/calc.o
+ .rodata        0x0000000000102f30        0xd ../bin/mydir.o
+ *fill*         0x0000000000102f3d        0x3 
+ .rodata        0x0000000000102f40       0x7d ../bin/shell.o
+ *fill*         0x0000000000102fbd        0x3 
+ .rodata        0x0000000000102fc0       0xb8 ../bin/com1.o
+ .rodata        0x0000000000103078      0x3b3 ../bin/panic.o
+ *fill*         0x000000000010342b        0x5 
+ .rodata        0x0000000000103430       0x87 ../bin/memory.o
+ *fill*         0x00000000001034b7        0x1 
+ .rodata        0x00000000001034b8       0x5e ../bin/pata.o
 
-.eh_frame       0x00000000001036d0      0x580
- .eh_frame      0x00000000001036d0       0x38 ../bin/kernel.o
- .eh_frame      0x0000000000103708       0x60 ../bin/vga.o
+.eh_frame       0x0000000000103518      0x580
+ .eh_frame      0x0000000000103518       0x38 ../bin/kernel.o
+ .eh_frame      0x0000000000103550       0x60 ../bin/vga.o
                                          0x78 (размер перед ослаблением)
- .eh_frame      0x0000000000103768       0x40 ../bin/keyboard.o
+ .eh_frame      0x00000000001035b0       0x40 ../bin/keyboard.o
                                          0x58 (размер перед ослаблением)
- .eh_frame      0x00000000001037a8       0x40 ../bin/string.o
+ .eh_frame      0x00000000001035f0       0x40 ../bin/string.o
                                          0x58 (размер перед ослаблением)
- .eh_frame      0x00000000001037e8       0x20 ../bin/calc.o
+ .eh_frame      0x0000000000103630       0x20 ../bin/calc.o
                                          0x38 (размер перед ослаблением)
- .eh_frame      0x0000000000103808       0x20 ../bin/mydir.o
+ .eh_frame      0x0000000000103650       0x20 ../bin/mydir.o
                                          0x38 (размер перед ослаблением)
- .eh_frame      0x0000000000103828       0x48 ../bin/info.o
+ .eh_frame      0x0000000000103670       0x48 ../bin/info.o
                                          0x60 (размер перед ослаблением)
- .eh_frame      0x0000000000103870       0x20 ../bin/shell.o
+ .eh_frame      0x00000000001036b8       0x20 ../bin/shell.o
                                          0x38 (размер перед ослаблением)
- .eh_frame      0x0000000000103890      0x1c0 ../bin/com1.o
+ .eh_frame      0x00000000001036d8      0x1c0 ../bin/com1.o
                                         0x1d8 (размер перед ослаблением)
- .eh_frame      0x0000000000103a50       0x40 ../bin/idt_c.o
+ .eh_frame      0x0000000000103898       0x40 ../bin/idt_c.o
                                          0x58 (размер перед ослаблением)
- .eh_frame      0x0000000000103a90       0x40 ../bin/pic_c.o
+ .eh_frame      0x00000000001038d8       0x40 ../bin/pic_c.o
                                          0x58 (размер перед ослаблением)
- .eh_frame      0x0000000000103ad0       0x40 ../bin/handlers_c.o
+ .eh_frame      0x0000000000103918       0x40 ../bin/handlers_c.o
                                          0x58 (размер перед ослаблением)
- .eh_frame      0x0000000000103b10       0x20 ../bin/panic.o
+ .eh_frame      0x0000000000103958       0x20 ../bin/panic.o
                                          0x38 (размер перед ослаблением)
- .eh_frame      0x0000000000103b30       0x80 ../bin/memory.o
+ .eh_frame      0x0000000000103978       0x80 ../bin/memory.o
                                          0x98 (размер перед ослаблением)
- .eh_frame      0x0000000000103bb0       0xa0 ../bin/pata.o
+ .eh_frame      0x00000000001039f8       0xa0 ../bin/pata.o
                                          0xb8 (размер перед ослаблением)
 
-.rodata.cst16   0x0000000000103c50       0x10
- .rodata.cst16  0x0000000000103c50       0x10 ../bin/printf.o
+.rodata.cst16   0x0000000000103aa0       0x10
+ .rodata.cst16  0x0000000000103aa0       0x10 ../bin/printf.o
 
-.rodata.str1.8  0x0000000000103c60       0x48
+.rodata.str1.8  0x0000000000103ab0       0x48
  .rodata.str1.8
-                0x0000000000103c60       0x48 ../bin/itoa.o
+                0x0000000000103ab0       0x48 ../bin/itoa.o
 
-.rela.dyn       0x0000000000103ca8        0x0
- .rela.got      0x0000000000103ca8        0x0 ../bin/boot.o
- .rela.iplt     0x0000000000103ca8        0x0 ../bin/boot.o
- .rela.text     0x0000000000103ca8        0x0 ../bin/boot.o
+.rela.dyn       0x0000000000103af8        0x0
+ .rela.got      0x0000000000103af8        0x0 ../bin/boot.o
+ .rela.iplt     0x0000000000103af8        0x0 ../bin/boot.o
+ .rela.text     0x0000000000103af8        0x0 ../bin/boot.o
 
-.data           0x0000000000103cc0      0x220
+.data           0x0000000000103b00      0x220
  *(.data)
- .data          0x0000000000103cc0        0x0 ../bin/kernel.o
- .data          0x0000000000103cc0        0x0 ../bin/vga.o
- .data          0x0000000000103cc0      0x108 ../bin/keyboard.o
-                0x0000000000103cc0                kbd_us
-                0x0000000000103d40                kbd_us_shift
- .data          0x0000000000103dc8        0x0 ../bin/printf.o
- .data          0x0000000000103dc8        0x0 ../bin/string.o
- .data          0x0000000000103dc8        0x0 ../bin/itoa.o
- .data          0x0000000000103dc8        0x0 ../bin/calc.o
- .data          0x0000000000103dc8        0x0 ../bin/mydir.o
- .data          0x0000000000103dc8        0x0 ../bin/info.o
- .data          0x0000000000103dc8        0x0 ../bin/shell.o
- .data          0x0000000000103dc8        0x0 ../bin/com1.o
- .data          0x0000000000103dc8        0x0 ../bin/idt_c.o
- .data          0x0000000000103dc8        0x0 ../bin/pic_c.o
- .data          0x0000000000103dc8        0x0 ../bin/handlers_c.o
- *fill*         0x0000000000103dc8       0x18 
- .data          0x0000000000103de0      0x100 ../bin/panic.o
- .data          0x0000000000103ee0        0x0 ../bin/memory.o
- .data          0x0000000000103ee0        0x0 ../bin/pata.o
+ .data          0x0000000000103b00        0x0 ../bin/kernel.o
+ .data          0x0000000000103b00        0x0 ../bin/vga.o
+ .data          0x0000000000103b00      0x108 ../bin/keyboard.o
+                0x0000000000103b00                kbd_us
+                0x0000000000103b80                kbd_us_shift
+ .data          0x0000000000103c08        0x0 ../bin/printf.o
+ .data          0x0000000000103c08        0x0 ../bin/string.o
+ .data          0x0000000000103c08        0x0 ../bin/itoa.o
+ .data          0x0000000000103c08        0x0 ../bin/calc.o
+ .data          0x0000000000103c08        0x0 ../bin/mydir.o
+ .data          0x0000000000103c08        0x0 ../bin/info.o
+ .data          0x0000000000103c08        0x0 ../bin/shell.o
+ .data          0x0000000000103c08        0x0 ../bin/com1.o
+ .data          0x0000000000103c08        0x0 ../bin/idt_c.o
+ .data          0x0000000000103c08        0x0 ../bin/pic_c.o
+ .data          0x0000000000103c08        0x0 ../bin/handlers_c.o
+ *fill*         0x0000000000103c08       0x18 
+ .data          0x0000000000103c20      0x100 ../bin/panic.o
+ .data          0x0000000000103d20        0x0 ../bin/memory.o
+ .data          0x0000000000103d20        0x0 ../bin/pata.o
 
-.got            0x0000000000103ee0        0x0
- .got           0x0000000000103ee0        0x0 ../bin/boot.o
+.got            0x0000000000103d20        0x0
+ .got           0x0000000000103d20        0x0 ../bin/boot.o
 
-.got.plt        0x0000000000103ee0        0x0
- .got.plt       0x0000000000103ee0        0x0 ../bin/boot.o
+.got.plt        0x0000000000103d20        0x0
+ .got.plt       0x0000000000103d20        0x0 ../bin/boot.o
 
-.igot.plt       0x0000000000103ee0        0x0
- .igot.plt      0x0000000000103ee0        0x0 ../bin/boot.o
+.igot.plt       0x0000000000103d20        0x0
+ .igot.plt      0x0000000000103d20        0x0 ../bin/boot.o
 
 .bss            0x0000000000104000     0x8240
  *(.bss*)
@@ -338,65 +337,65 @@ OUTPUT(../bin/kernel.bin elf64-x86-64)
  .debug_pubnames
                 0x0000000000000000        0x0 ../bin/idt_asm.o
 
-.debug_info     0x0000000000000000     0x1fd1
+.debug_info     0x0000000000000000     0x1edc
  .debug_info    0x0000000000000000       0x73 ../bin/boot.o
- .debug_info    0x0000000000000073      0x29e ../bin/kernel.o
- .debug_info    0x0000000000000311      0x17b ../bin/vga.o
- .debug_info    0x000000000000048c      0x2ba ../bin/keyboard.o
- .debug_info    0x0000000000000746       0xcd ../bin/string.o
- .debug_info    0x0000000000000813       0x79 ../bin/hardware.o
- .debug_info    0x000000000000088c      0x171 ../bin/calc.o
- .debug_info    0x00000000000009fd       0xaf ../bin/mydir.o
- .debug_info    0x0000000000000aac      0x158 ../bin/info.o
- .debug_info    0x0000000000000c04      0x19a ../bin/shell.o
- .debug_info    0x0000000000000d9e      0x451 ../bin/com1.o
- .debug_info    0x00000000000011ef       0x8c ../bin/idt_asm.o
- .debug_info    0x000000000000127b      0x3e2 ../bin/idt_c.o
- .debug_info    0x000000000000165d       0xec ../bin/pic_c.o
- .debug_info    0x0000000000001749      0x20f ../bin/handlers_c.o
- .debug_info    0x0000000000001958      0x23e ../bin/panic.o
- .debug_info    0x0000000000001b96      0x269 ../bin/memory.o
- .debug_info    0x0000000000001dff      0x1d2 ../bin/pata.o
+ .debug_info    0x0000000000000073      0x1a9 ../bin/kernel.o
+ .debug_info    0x000000000000021c      0x17b ../bin/vga.o
+ .debug_info    0x0000000000000397      0x2ba ../bin/keyboard.o
+ .debug_info    0x0000000000000651       0xcd ../bin/string.o
+ .debug_info    0x000000000000071e       0x79 ../bin/hardware.o
+ .debug_info    0x0000000000000797      0x171 ../bin/calc.o
+ .debug_info    0x0000000000000908       0xaf ../bin/mydir.o
+ .debug_info    0x00000000000009b7      0x158 ../bin/info.o
+ .debug_info    0x0000000000000b0f      0x19a ../bin/shell.o
+ .debug_info    0x0000000000000ca9      0x451 ../bin/com1.o
+ .debug_info    0x00000000000010fa       0x8c ../bin/idt_asm.o
+ .debug_info    0x0000000000001186      0x3e2 ../bin/idt_c.o
+ .debug_info    0x0000000000001568       0xec ../bin/pic_c.o
+ .debug_info    0x0000000000001654      0x20f ../bin/handlers_c.o
+ .debug_info    0x0000000000001863      0x23e ../bin/panic.o
+ .debug_info    0x0000000000001aa1      0x269 ../bin/memory.o
+ .debug_info    0x0000000000001d0a      0x1d2 ../bin/pata.o
 
-.debug_abbrev   0x0000000000000000      0xeda
+.debug_abbrev   0x0000000000000000      0xebf
  .debug_abbrev  0x0000000000000000       0x1d ../bin/boot.o
- .debug_abbrev  0x000000000000001d      0x115 ../bin/kernel.o
- .debug_abbrev  0x0000000000000132       0xf6 ../bin/vga.o
- .debug_abbrev  0x0000000000000228      0x12a ../bin/keyboard.o
- .debug_abbrev  0x0000000000000352       0xa9 ../bin/string.o
- .debug_abbrev  0x00000000000003fb       0x1d ../bin/hardware.o
- .debug_abbrev  0x0000000000000418       0xd1 ../bin/calc.o
- .debug_abbrev  0x00000000000004e9       0x94 ../bin/mydir.o
- .debug_abbrev  0x000000000000057d       0x93 ../bin/info.o
- .debug_abbrev  0x0000000000000610       0xf2 ../bin/shell.o
- .debug_abbrev  0x0000000000000702      0x172 ../bin/com1.o
- .debug_abbrev  0x0000000000000874       0x1d ../bin/idt_asm.o
- .debug_abbrev  0x0000000000000891      0x13a ../bin/idt_c.o
- .debug_abbrev  0x00000000000009cb       0xb1 ../bin/pic_c.o
- .debug_abbrev  0x0000000000000a7c      0x100 ../bin/handlers_c.o
- .debug_abbrev  0x0000000000000b7c      0x11b ../bin/panic.o
- .debug_abbrev  0x0000000000000c97      0x13e ../bin/memory.o
- .debug_abbrev  0x0000000000000dd5      0x105 ../bin/pata.o
+ .debug_abbrev  0x000000000000001d       0xfa ../bin/kernel.o
+ .debug_abbrev  0x0000000000000117       0xf6 ../bin/vga.o
+ .debug_abbrev  0x000000000000020d      0x12a ../bin/keyboard.o
+ .debug_abbrev  0x0000000000000337       0xa9 ../bin/string.o
+ .debug_abbrev  0x00000000000003e0       0x1d ../bin/hardware.o
+ .debug_abbrev  0x00000000000003fd       0xd1 ../bin/calc.o
+ .debug_abbrev  0x00000000000004ce       0x94 ../bin/mydir.o
+ .debug_abbrev  0x0000000000000562       0x93 ../bin/info.o
+ .debug_abbrev  0x00000000000005f5       0xf2 ../bin/shell.o
+ .debug_abbrev  0x00000000000006e7      0x172 ../bin/com1.o
+ .debug_abbrev  0x0000000000000859       0x1d ../bin/idt_asm.o
+ .debug_abbrev  0x0000000000000876      0x13a ../bin/idt_c.o
+ .debug_abbrev  0x00000000000009b0       0xb1 ../bin/pic_c.o
+ .debug_abbrev  0x0000000000000a61      0x100 ../bin/handlers_c.o
+ .debug_abbrev  0x0000000000000b61      0x11b ../bin/panic.o
+ .debug_abbrev  0x0000000000000c7c      0x13e ../bin/memory.o
+ .debug_abbrev  0x0000000000000dba      0x105 ../bin/pata.o
 
-.debug_line     0x0000000000000000     0x11f8
+.debug_line     0x0000000000000000     0x1181
  .debug_line    0x0000000000000000       0x7a ../bin/boot.o
- .debug_line    0x000000000000007a      0x127 ../bin/kernel.o
- .debug_line    0x00000000000001a1       0xd7 ../bin/vga.o
- .debug_line    0x0000000000000278      0x230 ../bin/keyboard.o
- .debug_line    0x00000000000004a8       0xbd ../bin/string.o
- .debug_line    0x0000000000000565       0x77 ../bin/hardware.o
- .debug_line    0x00000000000005dc       0xfa ../bin/calc.o
- .debug_line    0x00000000000006d6       0x6b ../bin/mydir.o
- .debug_line    0x0000000000000741       0xaf ../bin/info.o
- .debug_line    0x00000000000007f0      0x18e ../bin/shell.o
- .debug_line    0x000000000000097e      0x1d9 ../bin/com1.o
- .debug_line    0x0000000000000b57      0x13b ../bin/idt_asm.o
- .debug_line    0x0000000000000c92       0xe7 ../bin/idt_c.o
- .debug_line    0x0000000000000d79       0x7c ../bin/pic_c.o
- .debug_line    0x0000000000000df5       0x7d ../bin/handlers_c.o
- .debug_line    0x0000000000000e72       0xdd ../bin/panic.o
- .debug_line    0x0000000000000f4f      0x19f ../bin/memory.o
- .debug_line    0x00000000000010ee      0x10a ../bin/pata.o
+ .debug_line    0x000000000000007a       0xb0 ../bin/kernel.o
+ .debug_line    0x000000000000012a       0xd7 ../bin/vga.o
+ .debug_line    0x0000000000000201      0x230 ../bin/keyboard.o
+ .debug_line    0x0000000000000431       0xbd ../bin/string.o
+ .debug_line    0x00000000000004ee       0x77 ../bin/hardware.o
+ .debug_line    0x0000000000000565       0xfa ../bin/calc.o
+ .debug_line    0x000000000000065f       0x6b ../bin/mydir.o
+ .debug_line    0x00000000000006ca       0xaf ../bin/info.o
+ .debug_line    0x0000000000000779      0x18e ../bin/shell.o
+ .debug_line    0x0000000000000907      0x1d9 ../bin/com1.o
+ .debug_line    0x0000000000000ae0      0x13b ../bin/idt_asm.o
+ .debug_line    0x0000000000000c1b       0xe7 ../bin/idt_c.o
+ .debug_line    0x0000000000000d02       0x7c ../bin/pic_c.o
+ .debug_line    0x0000000000000d7e       0x7d ../bin/handlers_c.o
+ .debug_line    0x0000000000000dfb       0xdd ../bin/panic.o
+ .debug_line    0x0000000000000ed8      0x19f ../bin/memory.o
+ .debug_line    0x0000000000001077      0x10a ../bin/pata.o
 
 .debug_frame    0x0000000000000000        0x0
  .debug_frame   0x0000000000000000        0x0 ../bin/boot.o
@@ -408,57 +407,57 @@ OUTPUT(../bin/kernel.bin elf64-x86-64)
  .debug_loc     0x0000000000000000        0x0 ../bin/hardware.o
  .debug_loc     0x0000000000000000        0x0 ../bin/idt_asm.o
 
-.debug_str      0x0000000000000000      0x796
- .debug_str     0x0000000000000000      0x796 ../bin/kernel.o
-                                        0x1de (размер перед ослаблением)
- .debug_str     0x0000000000000796      0x10e ../bin/vga.o
- .debug_str     0x0000000000000796      0x178 ../bin/keyboard.o
- .debug_str     0x0000000000000796       0xc7 ../bin/string.o
- .debug_str     0x0000000000000796      0x115 ../bin/calc.o
- .debug_str     0x0000000000000796       0xbe ../bin/mydir.o
- .debug_str     0x0000000000000796       0xe1 ../bin/info.o
- .debug_str     0x0000000000000796      0x14a ../bin/shell.o
- .debug_str     0x0000000000000796      0x23b ../bin/com1.o
- .debug_str     0x0000000000000796      0x3bb ../bin/idt_c.o
- .debug_str     0x0000000000000796       0xed ../bin/pic_c.o
- .debug_str     0x0000000000000796      0x13b ../bin/handlers_c.o
- .debug_str     0x0000000000000796      0x163 ../bin/panic.o
- .debug_str     0x0000000000000796      0x19a ../bin/memory.o
- .debug_str     0x0000000000000796      0x185 ../bin/pata.o
+.debug_str      0x0000000000000000      0x78d
+ .debug_str     0x0000000000000000      0x78d ../bin/kernel.o
+                                        0x198 (размер перед ослаблением)
+ .debug_str     0x000000000000078d      0x10e ../bin/vga.o
+ .debug_str     0x000000000000078d      0x178 ../bin/keyboard.o
+ .debug_str     0x000000000000078d       0xc7 ../bin/string.o
+ .debug_str     0x000000000000078d      0x115 ../bin/calc.o
+ .debug_str     0x000000000000078d       0xbe ../bin/mydir.o
+ .debug_str     0x000000000000078d       0xe1 ../bin/info.o
+ .debug_str     0x000000000000078d      0x14a ../bin/shell.o
+ .debug_str     0x000000000000078d      0x23b ../bin/com1.o
+ .debug_str     0x000000000000078d      0x3bb ../bin/idt_c.o
+ .debug_str     0x000000000000078d       0xed ../bin/pic_c.o
+ .debug_str     0x000000000000078d      0x13b ../bin/handlers_c.o
+ .debug_str     0x000000000000078d      0x163 ../bin/panic.o
+ .debug_str     0x000000000000078d      0x19a ../bin/memory.o
+ .debug_str     0x000000000000078d      0x185 ../bin/pata.o
 
 .debug_line_str
-                0x0000000000000000      0x212
+                0x0000000000000000      0x20d
  .debug_line_str
-                0x0000000000000000      0x212 ../bin/kernel.o
-                                         0xf7 (размер перед ослаблением)
+                0x0000000000000000      0x20d ../bin/kernel.o
+                                         0xf6 (размер перед ослаблением)
  .debug_line_str
-                0x0000000000000212       0x7c ../bin/vga.o
+                0x000000000000020d       0x7c ../bin/vga.o
  .debug_line_str
-                0x0000000000000212       0x92 ../bin/keyboard.o
+                0x000000000000020d       0x92 ../bin/keyboard.o
  .debug_line_str
-                0x0000000000000212       0x63 ../bin/string.o
+                0x000000000000020d       0x63 ../bin/string.o
  .debug_line_str
-                0x0000000000000212       0x9b ../bin/calc.o
+                0x000000000000020d       0x99 ../bin/calc.o
  .debug_line_str
-                0x0000000000000212       0x83 ../bin/mydir.o
+                0x000000000000020d       0x81 ../bin/mydir.o
  .debug_line_str
-                0x0000000000000212       0x69 ../bin/info.o
+                0x000000000000020d       0x67 ../bin/info.o
  .debug_line_str
-                0x0000000000000212       0xb7 ../bin/shell.o
+                0x000000000000020d       0xb4 ../bin/shell.o
  .debug_line_str
-                0x0000000000000212       0x64 ../bin/com1.o
+                0x000000000000020d       0x64 ../bin/com1.o
  .debug_line_str
-                0x0000000000000212       0x72 ../bin/idt_c.o
+                0x000000000000020d       0x72 ../bin/idt_c.o
  .debug_line_str
-                0x0000000000000212       0x89 ../bin/pic_c.o
+                0x000000000000020d       0x89 ../bin/pic_c.o
  .debug_line_str
-                0x0000000000000212       0xb2 ../bin/handlers_c.o
+                0x000000000000020d       0xb2 ../bin/handlers_c.o
  .debug_line_str
-                0x0000000000000212       0xa0 ../bin/panic.o
+                0x000000000000020d       0xa0 ../bin/panic.o
  .debug_line_str
-                0x0000000000000212       0x70 ../bin/memory.o
+                0x000000000000020d       0x70 ../bin/memory.o
  .debug_line_str
-                0x0000000000000212       0xa0 ../bin/pata.o
+                0x000000000000020d       0xa0 ../bin/pata.o
 
 .comment        0x0000000000000000       0x4a
  .comment       0x0000000000000000       0x4a ../bin/kernel.o
