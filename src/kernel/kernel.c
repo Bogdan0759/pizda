@@ -25,8 +25,7 @@ void kmain() {
 
   char s_buf[2048];
   int current_line = 5;
-  char *dir =
-      "/"; // Потом когда добавим файловую систему нужнл будет немного изменить
+  char dir[256] = "/"; // Потом когда добавим файловую систему нужнл будет немного изменить
 
   print(dir, current_line, 0, 0x0F);
   print(">", current_line, 1, 0x0F);

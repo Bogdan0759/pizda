@@ -4,6 +4,9 @@
 int strcmp(const char *str1, const char *str2);
 int strlen(const char *str);
 int atoi(const char *str);
+char* strcpy(char* dest, const char* src);
+char* strcat(char* dest, const char* src);
+char* strchr(const char* str, int c);
 char *itoa(int value, char *str, int base);
 void printf(char *format, ...);
 void outb(unsigned short port, unsigned char data);

@@ -31,3 +31,29 @@ int strlen(const char *str) {
   }
   return len;
 }
+
+char* strcpy(char* dest, const char* src) {
+  char* original_dest = dest;
+  while ((*dest++ = *src++));
+  return original_dest;
+}
+
+char* strcat(char* dest, const char* src) {
+  char* original_dest = dest;
+  while (*dest) dest++;
+  while ((*dest++ = *src++));
+  return original_dest;
+}
+
+char* strchr(const char* str, int c) {
+  while (*str) {
+    if (*str == c) {
+      return (char*)str;
+    }
+    str++;
+  }
+  if (c == 0) {
+    return (char*)str;
+  }
+  return 0;
+}
