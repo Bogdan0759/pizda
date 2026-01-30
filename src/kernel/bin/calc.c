@@ -1,6 +1,6 @@
+#include <kernel/bin/calc.h>
 #include <kernel/drivers/keyboard.h>
 #include <kernel/drivers/vga.h>
-#include <kernel/bin/calc.h>
 #include <mlibc/mlibc.h>
 
 void calc(char *s_buf, int *current_line, char *dir) {
@@ -46,4 +46,8 @@ void calc(char *s_buf, int *current_line, char *dir) {
 
   print(dir, *current_line, 0, 0x0F);
   print(">", *current_line, 1, 0x0F);
+
+  if (*current_line >= 25) {
+    *current_line = 24;
+  }
 }

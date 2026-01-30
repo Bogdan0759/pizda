@@ -1,7 +1,7 @@
+#include <kernel/bin/shell.h>
 #include <kernel/drivers/disk/pata/pata.h>
 #include <kernel/drivers/keyboard.h>
 #include <kernel/drivers/vga.h>
-#include <kernel/bin/shell.h>
 #include <kernel/interrupts/idt.h>
 #include <lib/com1.h>
 #include <mlibc/mlibc.h>
@@ -33,7 +33,10 @@ void kmain() {
 
   while (1) {
     scanf(s_buf, 2048, current_line, 2, 0x0F, dir);
-
     shell_func(s_buf, &current_line, dir);
+
+    if (current_line >= 25) {
+      current_line = 24;
+    }
   }
 }
