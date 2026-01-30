@@ -2,6 +2,7 @@
 #define MLIBC_H
 
 int strcmp(const char *str1, const char *str2);
+int strlen(const char *str);
 int atoi(const char *str);
 char *itoa(int value, char *str, int base);
 void printf(char *format, ...);

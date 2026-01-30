@@ -4,12 +4,10 @@
 #include <mlibc/mlibc.h>
 
 void calc(char *s_buf, int *current_line, char *dir) {
-  // Используем *current_line, так как это указатель
   print(dir, *current_line, 0, 0x0F);
   print(">", *current_line, 1, 0x0F);
   print("first number: ", (*current_line)++, 2, 0x0F);
 
-  // Передаем аргументы дальше
   scanf(s_buf, 2048, *current_line - 1, 16, 0x0F, dir);
   int first_number = atoi(s_buf);
 
