@@ -89,8 +89,8 @@ void mouse_handler() {
     int old_x = g_mouse_state.x;
     int old_y = g_mouse_state.y;
 
-    g_mouse_state.x += mouse_byte[1] / 2;
-    g_mouse_state.y -= mouse_byte[2] / 2;
+    g_mouse_state.x += mouse_byte[1] / 8;
+    g_mouse_state.y -= mouse_byte[2] / 8;
 
     if (g_mouse_state.x < 0)
       g_mouse_state.x = 0;
