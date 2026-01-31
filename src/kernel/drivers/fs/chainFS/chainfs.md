@@ -1,200 +1,196 @@
-ChainFS (CFS) — Спецификация v2.0 (с поддержкой директорий)
+# ChainFS (CFS) — Specification v2.0 (Directory Support)
 
-## Основные характеристики
-- Размер блока: 512 байт (равен стандартному сектору диска)
-- Имя файла/директории: 30 байт (фиксировано)
-- Макс. размер диска: 2 Терабайта (при 32-битной адресации)
-- Структура: **Иерархическая** (поддержка директорий и вложенных путей)
-- Порядок байт: Little-Endian
-- Макс. размер файла: ~2GB (32-битное поле размера)
-- Макс. длина пути: 256 символов
+## Key Characteristics
+- **Block Size**: 512 bytes (equivalent to a standard disk sector).
+- **File/Directory Name**: 30 bytes (fixed).
+- **Max Disk Size**: 2 Terabytes (with 32-bit block addressing).
+- **Structure**: **Hierarchical** (supports directories and nested paths).
+- **Byte Order**: Little-Endian.
+- **Max File Size**: ~2GB (32-bit size field).
+- **Max Path Length**: 256 characters.
 
-## 1. Карта Диска (Disk Layout)
-Диск разбит на 4 четкие зоны. Все адреса — это номера блоков (LBA), начиная с 0.
+## 1. Disk Layout
+The disk is divided into 4 distinct regions. All addresses are block numbers (LBA), starting from 0.
 
-| Зона       | Старт (Блок) | Размер (Блоков) | Описание                                    |
+| Zone       | Start (Block) | Size (Blocks) | Description                                    |
 |------------|--------------|-----------------|---------------------------------------------|
-| Superblock | 0            | 1               | Информация о системе + ссылка на root dir  |
-| File Table | 1            | M               | Таблица описания файлов и директорий       |
-| Block Map  | 1 + M        | N               | Карта цепочек (какой блок идет следующим)  |
-| Data Area  | 1 + M + N    | Всё остальное   | Сами данные файлов                         |
+| Superblock | 0            | 1               | System information + root directory reference |
+| File Table | 1            | M               | Array of file and directory descriptors      |
+| Block Map  | 1 + M        | N               | Chain map (defines the next block in a sequence) |
+| Data Area  | 1 + M + N    | Remaining       | Actual file contents                         |
 
-Примечание: M (размер таблицы файлов) и N (размер карты блоков) вычисляются при форматировании и записываются в суперблок.
-## 2. Структуры данных
+*Note: M (File Table size) and N (Block Map size) are calculated during formatting and stored in the Superblock.*
 
-### 2.1. Superblock (Блок 0)
-Всего 512 байт. Лежит в самом начале диска.
+## 2. Data Structures
 
-| Смещение | Тип     | Имя                   | Описание                                    |
-|----------|---------|----------------------|---------------------------------------------|
-| 0x00     | u32     | Magic                | 0xCAFEBABE (Магическое число)              |
-| 0x04     | u32     | BlockCount           | Всего блоков на диске                      |
-| 0x08     | u32     | FileTableBlockCount  | Размер зоны "File Table" в блоках (M)     |
-| 0x0C     | u32     | BlockMapBlockCount   | Размер зоны "Block Map" в блоках (N)      |
-| 0x10     | u32     | TotalFiles           | Максимальное число файлов/директорий       |
-| 0x14     | u32     | RootDirBlock         | Блок с записью корневой директории         |
-| 0x18     | u8[488] | Padding              | Нули                                       |
+### 2.1. Superblock (Block 0)
+The first 512 bytes of the disk.
 
-### 2.2. File Entry (Запись о файле/директории)
-Зона File Table — это просто массив вот таких структур.
-Размер одной записи: 64 байта.
-В один блок (512 байт) влезает ровно 8 записей.
+| Offset | Type    | Name                   | Description                                    |
+|--------|---------|----------------------|---------------------------------------------|
+| 0x00   | u32     | Magic                | 0xCAFEBABE (Identification magic)           |
+| 0x04   | u32     | BlockCount           | Total number of blocks on the disk          |
+| 0x08   | u32     | FileTableBlockCount  | Size of "File Table" in blocks (M)          |
+| 0x0C   | u32     | BlockMapBlockCount   | Size of "Block Map" in blocks (N)           |
+| 0x10   | u32     | TotalFiles           | Maximum number of files/directories         |
+| 0x14   | u32     | RootDirBlock         | Block index containing the root directory entry |
+| 0x18   | u8[488] | Padding              | Zero-filled padding                         |
 
-| Смещение | Тип     | Имя         | Описание                                           |
-|----------|---------|-------------|---------------------------------------------------|
-| 0x00     | u8      | Status      | 0 = Свободно, 1 = Файл/директория существует     |
-| 0x01     | u8      | Type        | 0 = Файл, 1 = Директория                         |
-| 0x02     | char[30]| Name        | Имя файла/директории (ASCII, завершается нулем)  |
-| 0x20     | u32     | Size        | Размер файла в байтах (0 для директорий)         |
-| 0x24     | u32     | StartBlock  | Индекс первого блока данных (0 для директорий)   |
-| 0x28     | u32     | ParentBlock | Блок родительской директории (0 для root)        |
-| 0x2C     | u8[16]  | Reserved    | Зарезервировано (забито нулями)                   |
-### 2.3. The Block Map (Карта Цепочек)
-Это самое важное упрощение. Вместо битовых карт мы используем массив чисел u32.
-Каждый элемент массива соответствует блоку в зоне Data Area.
-Значение элемента говорит нам, что делать дальше.
+### 2.2. File Entry
+The File Table is an array of these structures.
+Size: 64 bytes (exactly 8 entries per 512-byte block).
 
-**Значения в Block Map:**
-- `0x00000000`: Блок свободен (Free)
-- `0xFFFFFFFF`: Конец файла (EOF)
-- Любое другое число: Индекс следующего блока этого файла
+| Offset | Type     | Name         | Description                                           |
+|--------|----------|-------------|---------------------------------------------------|
+| 0x00   | u8       | Status      | 0 = Free, 1 = File/Directory exists               |
+| 0x01   | u8       | Type        | 0 = File, 1 = Directory                           |
+| 0x02   | char[30] | Name        | Name (ASCII, null-terminated)                     |
+| 0x20   | u32      | Size        | File size in bytes (0 for directories)            |
+| 0x24   | u32      | StartBlock  | First data block index (0 for directories)        |
+| 0x28   | u32      | ParentBlock | Index of the parent directory (0 for root)        |
+| 0x2C   | u8[16]   | Reserved    | Zero-filled reservation                           |
 
-**Пример:**
-Если файл занимает блоки 5, 6 и 9:
-- Entry[5] будет равно 6
-- Entry[6] будет равно 9  
-- Entry[9] будет равно 0xFFFFFFFF (Конец)
+### 2.3. The Block Map
+Each element corresponds to a block in the Data Area.
+It acts as a linked list (chain) for file blocks.
 
-## 3. Иерархическая структура директорий
+**Block Map Values:**
+- `0x00000000`: Block is Free.
+- `0xFFFFFFFF`: End Of File (EOF).
+- Any other number: Index of the next block in the file's chain.
 
-### 3.1. Корневая директория
-- Всегда создается при форматировании
-- Имеет имя "/" и Type = 1
-- ParentBlock = 0 (нет родителя)
-- StartBlock = 0 (не нужны блоки данных)
+**Example:**
+If a file occupies blocks 5, 6, and 9:
+- Map[5] = 6
+- Map[6] = 9
+- Map[9] = 0xFFFFFFFF (End)
 
-### 3.2. Поиск по пути
-Для поиска файла "/test/file.txt":
-1. Начинаем с корневой директории (RootDirBlock)
-2. Ищем запись с именем "test" и Type = 1 в дочерних элементах root
-3. Переходим к найденной директории "test"
-4. Ищем запись с именем "file.txt" в дочерних элементах "test"
+## 3. Hierarchical Directory Structure
 
-### 3.3. Дочерние элементы
-Дочерние файлы/директории определяются по полю ParentBlock:
-- Все записи с ParentBlock = X являются дочерними для директории в блоке X
-## 4. Алгоритмы (Как это кодить)
+### 3.1. Root Directory
+- Automatically created during formatting.
+- Name: `/`, Type: 1.
+- ParentBlock: 0 (no parent).
+- StartBlock: 0 (directories do not use data blocks).
 
-### 4.1. Как прочитать файл "/test/file.txt"
-1. **Загрузи Суперблок** (Блок 0). Узнай RootDirBlock
-2. **Разбор пути**: Разбей путь на компоненты ["test", "file.txt"]
-3. **Поиск директории "test"**:
-   - Сканируй File Table, ищи записи где ParentBlock = RootDirBlock
-   - Найди запись с Name = "test" и Type = 1
-   - Запомни блок этой записи как CurrentDirBlock
-4. **Поиск файла "file.txt"**:
-   - Сканируй File Table, ищи записи где ParentBlock = CurrentDirBlock  
-   - Найди запись с Name = "file.txt" и Type = 0
-   - Запомни StartBlock и Size
-5. **Чтение данных**: Как в v1.0 - следуй цепочке блоков через Block Map
+### 3.2. Path Resolution
+To find `/test/file.txt`:
+1. Start at `RootDirBlock`.
+2. Search for an entry with `Name = "test"` and `Type = 1` where `ParentBlock = RootDirBlock`.
+3. Move to the found "test" directory.
+4. Search for an entry with `Name = "file.txt"` and `Type = 0` where `ParentBlock = CurrentBlock`.
 
-### 4.2. Как создать файл "/test/newfile.txt"
-1. **Разбор пути**: Извлеки родительский путь "/test" и имя файла "newfile.txt"
-2. **Найди родительскую директорию**: Используй алгоритм поиска для "/test"
-3. **Проверь, что родитель - директория**: Type должен быть 1
-4. **Найди свободную запись** в File Table
-5. **Создай файл**:
-   - Status = 1, Type = 0
-   - Name = "newfile.txt"  
-   - ParentBlock = блок директории "/test"
-   - Выдели блоки данных и заполни StartBlock, Size
-6. **Запиши данные**: Как в v1.0
+### 3.3. Child Elements
+Child files and directories are identified by their `ParentBlock` field matching the index of their parent directory.
 
-### 4.3. Как создать директорию "/test/newdir"
-1. **Разбор пути**: Извлеки родительский путь "/test" и имя "newdir"
-2. **Найди родительскую директорию**: "/test"
-3. **Найди свободную запись** в File Table
-4. **Создай директорию**:
-   - Status = 1, Type = 1
-   - Name = "newdir"
-   - ParentBlock = блок директории "/test"  
-   - StartBlock = 0, Size = 0 (директории не используют блоки данных)
+## 4. Algorithms
 
-### 4.4. Как удалить директорию
-1. **Найди директорию** по пути
-2. **Проверь, что она пустая**: Не должно быть записей с ParentBlock = этот блок
-3. **Удали запись**: Status = 0
+### 4.1. Reading a file (`/test/file.txt`)
+1. **Load Superblock**: Find `RootDirBlock`.
+2. **Parse Path**: Split into components `["test", "file.txt"]`.
+3. **Find "test" directory**:
+   - Scan File Table for `ParentBlock = RootDirBlock` and `Name = "test"`.
+   - Record its block index as `CurrentDirBlock`.
+4. **Find "file.txt"**:
+   - Scan File Table for `ParentBlock = CurrentDirBlock` and `Name = "file.txt"`.
+   - Get `StartBlock` and `Size`.
+5. **Read Data**: Similar to v1.0 — follow the block chain in the Block Map.
 
-## 5. Новые команды Shell
+### 4.2. Creating a file (`/test/newfile.txt`)
+1. **Parse Path**: Extract parent path `/test` and file name `newfile.txt`.
+2. **Find Parent Directory**: Resolve the `/test` path.
+3. **Validate**: Ensure the parent is indeed a directory (`Type = 1`).
+4. **Allocate Entry**: Find a free slot (`Status = 0`) in the File Table.
+5. **Initialize Entry**:
+   - Status = 1, Type = 0, Name = "newfile.txt".
+   - ParentBlock = `test` directory block.
+   - Allocate data blocks and set `StartBlock` and `Size`.
+6. **Write Data**: Similar to v1.0.
 
-### Команды для работы с директориями:
-- `mkdir <path>` - Создать директорию
-- `rmdir <path>` - Удалить пустую директорию  
-- `cd <path>` - Сменить текущую директорию
-- `cd` - Перейти в корень
-- `ls` - Показать содержимое текущей директории
-- `ls <path>` - Показать содержимое указанной директории
-- `mydir` - Показать текущий путь
+### 4.3. Creating a directory (`/test/newdir`)
+1. **Parse Path**: Extract parent path `/test` and name `newdir`.
+2. **Find Parent Directory**: `/test`.
+3. **Allocate Entry**: Find a free slot in the File Table.
+4. **Initialize Directory**:
+   - Status = 1, Type = 1, Name = "newdir".
+   - ParentBlock = `test` directory block.
+   - StartBlock = 0, Size = 0 (directories do not use data blocks).
 
-### Поддержка путей:
-- Абсолютные пути: `/test/file.txt`
-- Относительные пути: `file.txt`, `subdir/file.txt`
-- Максимальная длина пути: 256 символов
-## 6. Пример "на пальцах" с директориями
+### 4.4. Deleting a directory
+1. Locate the directory via its path.
+2. **Check empty**: Ensure no entries exist with `ParentBlock = this_block`.
+3. **Release**: Set `Status = 0` for the entry.
 
-Представь диск на 15 блоков. Блок = 512 байт.
+## 5. Shell Operations
 
-**Блок 0 (Суперблок)**: 
-- FileTableSize=2, BlockMapSize=1, RootDirBlock=1
+### Directory Commands:
+- `mkdir <path>` - Create directory.
+- `rmdir <path>` - Remove empty directory.
+- `cd <path>` - Change current directory.
+- `cd` - Go to root.
+- `ls` - List current directory.
+- `ls <path>` - List specified directory.
+- `mydir` - Print current working directory (e.g., info about current path).
 
-**Блок 1-2 (File Table)**:
+### Path Support:
+- **Absolute**: `/test/file.txt`
+- **Relative**: `file.txt`, `subdir/file.txt`
+- **Max Length**: 256 characters.
+
+## 6. Detailed Example
+
+Imagine a small disk with 15 blocks. Block size = 512 bytes.
+
+**Block 0 (Superblock)**: 
+- FileTableBlockCount = 2, BlockMapBlockCount = 1, RootDirBlock = 1 (index in the table, effectively points to the entry)
+
+**Blocks 1-2 (File Table)**:
 ```
-Блок 1:
-  Запись 0: Status=1, Type=1, Name="/", ParentBlock=0      (root dir)
-  Запись 1: Status=1, Type=1, Name="test", ParentBlock=1   (test dir)
-  Запись 2: Status=1, Type=0, Name="root.txt", ParentBlock=1, Start=0, Size=600
+Block 1:
+  Entry 0: Status=1, Type=1, Name="/", ParentBlock=0      (root dir)
+  Entry 1: Status=1, Type=1, Name="test", ParentBlock=1   (test dir)
+  Entry 2: Status=1, Type=0, Name="root.txt", ParentBlock=1, Start=0, Size=600
   ...
 
-Блок 2:  
-  Запись 0: Status=1, Type=0, Name="file1.txt", ParentBlock=1, Start=2, Size=300
-  Запись 1: Status=1, Type=0, Name="deep.txt", ParentBlock=1, Start=4, Size=200
+Block 2:  
+  Entry 0: Status=1, Type=0, Name="file1.txt", ParentBlock=1 (of root), Start=2, Size=300
+  Entry 1: Status=1, Type=0, Name="deep.txt", ParentBlock=2 (of test), Start=4, Size=200
   ...
 ```
 
-**Блок 3 (Block Map)**: 
+**Block 3 (Block Map)**: 
 ```
 [1, EOF, 3, EOF, EOF, 0, 0, ...]
-Индекс 0: значение 1 (root.txt: блок 0 -> блок 1)
-Индекс 1: значение EOF (root.txt: конец)  
-Индекс 2: значение 3 (file1.txt: блок 2 -> блок 3)
-Индекс 3: значение EOF (file1.txt: конец)
-Индекс 4: значение EOF (deep.txt: только один блок)
+Index 0: value 1 (root.txt: block 0 -> block 1)
+Index 1: value EOF (root.txt: end)  
+Index 2: value 3 (file1.txt: block 2 -> block 3)
+Index 3: value EOF (file1.txt: end)
+Index 4: value EOF (deep.txt: single block)
 ```
 
-**Блок 4+ (Data Area)**:
+**Block 4+ (Data Area)**:
 ```
-Физический блок 4: Данные root.txt (часть 1)
-Физический блок 5: Данные root.txt (часть 2) 
-Физический блок 6: Данные file1.txt (часть 1)
-Физический блок 7: Данные file1.txt (часть 2)
-Физический блок 8: Данные deep.txt
+Data Area Block 0 (Physical Block 4): root.txt data (part 1)
+Data Area Block 1 (Physical Block 5): root.txt data (part 2) 
+Data Area Block 2 (Physical Block 6): file1.txt data (part 1)
+Data Area Block 3 (Physical Block 7): file1.txt data (part 2)
+Data Area Block 4 (Physical Block 8): deep.txt data
 ```
 
-**Структура директорий**:
+**Directory Structure Representation**:
 ```
 /
-├── root.txt (600 байт)
+├── root.txt (600 bytes)
 └── test/
-    ├── file1.txt (300 байт)  
-    └── deep.txt (200 байт)
+    ├── file1.txt (300 bytes)  <- Note: In example Entry 0 of Block 2 belongs to parent 1 (root)
+    └── deep.txt (200 bytes)   <- Note: In example Entry 1 of Block 2 belongs to parent 2 (test)
 ```
 
-## 7. Лимиты системы
-
-- **Максимальный размер файла**: ~2GB (u32 size field)
-- **Максимальный размер диска**: 2TB (u32 block addressing)  
-- **Файлы 1KB+**: ✅ Отлично поддерживаются (автоматическое разбиение на блоки)
-- **Максимум файлов/директорий**: Настраивается при форматировании
-- **Глубина вложенности**: Практически неограниченная
-- **Длина имени**: 30 символов
-- **Длина пути**: 256 символов
+## 7. System Limits
+- **Max File Size**: ~2GB (u32 size field).
+- **Max Disk Size**: 2TB (u32 block addressing).  
+- **Files 1KB+**:  Fully supported (automatic block fragmentation).
+- **Max Files/Directories**: Configured during formatting.
+- **Nesting Depth**: Virtually unlimited.
+- **Name Length**: 30 characters.
+- **Path Length**: 256 characters.
