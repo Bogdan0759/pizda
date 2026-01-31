@@ -1,6 +1,10 @@
 #ifndef MLIBC_H
 #define MLIBC_H
 
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
+
 int strcmp(const char *str1, const char *str2);
 int strlen(const char *str);
 int atoi(const char *str);

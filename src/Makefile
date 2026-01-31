@@ -32,11 +32,13 @@ PANIC_O = ../bin/panic.o
 MEMORY_O = ../bin/memory.o
 PATA_O = ../bin/pata.o
 CHAINFS_O = ../bin/chainfs.o
+CAT_O = ../bin/cat.o
+TOUCH_O = ../bin/touch.o
 
 OBJ = $(BOOT_O) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) \
       $(ITOA_O) $(HARDWARE_O) $(CALC_O) $(MYDIR_O) \
       $(INFO_O) $(SHELL_O) $(COM1_O) $(IDT_ASM_O) $(IDT_C_O) $(PIC_O) \
-      $(HANDLERS_O) $(PANIC_O) $(MEMORY_O) $(PATA_O) $(CHAINFS_O)
+      $(HANDLERS_O) $(PANIC_O) $(MEMORY_O) $(PATA_O) $(CHAINFS_O) $(CAT_O) $(TOUCH_O)
 
 all: $(ISO_IMAGE)
 
@@ -109,6 +111,12 @@ $(MYDIR_O): kernel/bin/mydir.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_O): kernel/bin/shell.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(CAT_O): kernel/bin/cat.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(TOUCH_O): kernel/bin/touch.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(COM1_O): lib/com1.c

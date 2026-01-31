@@ -1,7 +1,9 @@
 #include <kernel/bin/calc.h>
+#include <kernel/bin/cat.h>
 #include <kernel/bin/info.h>
 #include <kernel/bin/mydir.h>
 #include <kernel/bin/shell.h>
+#include <kernel/bin/touch.h>
 #include <kernel/drivers/fs/chainFS/chainfs.h>
 #include <kernel/drivers/keyboard.h>
 #include <kernel/drivers/vga.h>
@@ -33,8 +35,10 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     print(dir, *current_line, 0, 0x0F);
     print(">", *current_line, 1, 0x0F);
   } else if (strcmp(s_buf, "help") == 0) {
-    print("Commands: shutdown, reboot, clear, echo, mydir, help, calc, info,", (*current_line)++, 0, 0x0A);
-    print("          test_fs, mkdir, ls, cd, rmdir", (*current_line)++, 0, 0x0A);
+    print("Commands: shutdown, reboot, clear, echo, mydir, help, calc, info,",
+          (*current_line)++, 0, 0x0A);
+    print("          test_fs, mkdir, ls, cd, rmdir, touch, cat, format",
+          (*current_line)++, 0, 0x0A);
     print(dir, *current_line, 0, 0x0F);
     print(">", *current_line, 1, 0x0F);
   } else if (s_buf[0] == 'e' && s_buf[1] == 'c' && s_buf[2] == 'h' &&
@@ -49,7 +53,8 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     print("Usage: mkdir <directory_name>", (*current_line)++, 0, 0x0C);
     print(dir, *current_line, 0, 0x0F);
     print(">", *current_line, 1, 0x0F);
-  } else if (s_buf[0] == 'm' && s_buf[1] == 'k' && s_buf[2] == 'd' && s_buf[3] == 'i' && s_buf[4] == 'r' && s_buf[5] == ' ') {
+  } else if (s_buf[0] == 'm' && s_buf[1] == 'k' && s_buf[2] == 'd' &&
+             s_buf[3] == 'i' && s_buf[4] == 'r' && s_buf[5] == ' ') {
     if (chainfs_mkdir(&s_buf[6]) == 0) {
       print("Directory created", (*current_line)++, 0, 0x0A);
     } else {
@@ -67,7 +72,7 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
         for (u32 i = 0; i < file_count; i++) {
           char file_info[80];
           int pos = 0;
-          
+
           if (file_list[i].type == CHAINFS_TYPE_DIR) {
             file_info[pos++] = '[';
             file_info[pos++] = 'D';
@@ -126,7 +131,7 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
         for (u32 i = 0; i < file_count; i++) {
           char file_info[80];
           int pos = 0;
-          
+
           if (file_list[i].type == CHAINFS_TYPE_DIR) {
             file_info[pos++] = '[';
             file_info[pos++] = 'D';
@@ -197,7 +202,8 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     print("Usage: rmdir <directory_name>", (*current_line)++, 0, 0x0C);
     print(dir, *current_line, 0, 0x0F);
     print(">", *current_line, 1, 0x0F);
-  } else if (s_buf[0] == 'r' && s_buf[1] == 'm' && s_buf[2] == 'd' && s_buf[3] == 'i' && s_buf[4] == 'r' && s_buf[5] == ' ') {
+  } else if (s_buf[0] == 'r' && s_buf[1] == 'm' && s_buf[2] == 'd' &&
+             s_buf[3] == 'i' && s_buf[4] == 'r' && s_buf[5] == ' ') {
     if (chainfs_rmdir(&s_buf[6]) == 0) {
       print("Directory removed", (*current_line)++, 0, 0x0A);
     } else {
@@ -205,13 +211,29 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     }
     print(dir, *current_line, 0, 0x0F);
     print(">", *current_line, 1, 0x0F);
+  } else if (s_buf[0] == 't' && s_buf[1] == 'o' && s_buf[2] == 'u' &&
+             s_buf[3] == 'c' && s_buf[4] == 'h' &&
+             (s_buf[5] == ' ' || s_buf[5] == 0)) {
+    touch(s_buf, current_line, dir);
+  } else if (s_buf[0] == 'c' && s_buf[1] == 'a' && s_buf[2] == 't' &&
+             (s_buf[3] == ' ' || s_buf[3] == 0)) {
+    cat(s_buf, current_line, dir);
+  } else if (strcmp(s_buf, "format") == 0) {
+    chainfs_init();
+    if (chainfs_format(20480, 100) == 0) {
+      chainfs_get_current_path(dir, 256);
+    } else {
+      print("format failed", (*current_line)++, 0, 0x0C);
+    }
+    print(dir, *current_line, 0, 0x0F);
+    print(">", *current_line, 1, 0x0F);
   } else if (strcmp(s_buf, "test_fs") == 0) {
     print("=== ChainFS Directory Test ===", (*current_line)++, 0, 0x0A);
 
     if (chainfs_format(20480, 100) != 0) {
-      print("Format failed!", (*current_line)++, 0, 0x0C);
+      print("format failed", (*current_line)++, 0, 0x0C);
     } else {
-      print("Format OK", (*current_line)++, 0, 0x0A);
+      print("format ok", (*current_line)++, 0, 0x0A);
     }
 
     // Test 1: Create directories
@@ -221,7 +243,7 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     } else {
       print("  mkdir test - FAILED", (*current_line)++, 0, 0x0C);
     }
-    
+
     if (chainfs_mkdir("test/subdir") == 0) {
       print("  mkdir test/subdir - OK", (*current_line)++, 0, 0x0A);
     } else {
@@ -231,7 +253,8 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     // Test 2: Create files in root
     print("Creating files in root...", (*current_line)++, 0, 0x0F);
     const char *test_data = "root file content";
-    if (chainfs_write_file("root.txt", (const u8 *)test_data, strlen(test_data)) == 0) {
+    if (chainfs_write_file("root.txt", (const u8 *)test_data,
+                           strlen(test_data)) == 0) {
       print("  root.txt - OK", (*current_line)++, 0, 0x0A);
     } else {
       print("  root.txt - FAILED", (*current_line)++, 0, 0x0C);
@@ -240,14 +263,16 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     // Test 3: Create files in test directory
     print("Creating files in test dir...", (*current_line)++, 0, 0x0F);
     const char *test_data2 = "test directory file";
-    if (chainfs_write_file("test/file1.txt", (const u8 *)test_data2, strlen(test_data2)) == 0) {
+    if (chainfs_write_file("test/file1.txt", (const u8 *)test_data2,
+                           strlen(test_data2)) == 0) {
       print("  test/file1.txt - OK", (*current_line)++, 0, 0x0A);
     } else {
       print("  test/file1.txt - FAILED", (*current_line)++, 0, 0x0C);
     }
 
     const char *test_data3 = "subdir file content";
-    if (chainfs_write_file("test/subdir/deep.txt", (const u8 *)test_data3, strlen(test_data3)) == 0) {
+    if (chainfs_write_file("test/subdir/deep.txt", (const u8 *)test_data3,
+                           strlen(test_data3)) == 0) {
       print("  test/subdir/deep.txt - OK", (*current_line)++, 0, 0x0A);
     } else {
       print("  test/subdir/deep.txt - FAILED", (*current_line)++, 0, 0x0C);
@@ -263,7 +288,7 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
         int pos = 0;
         file_info[pos++] = ' ';
         file_info[pos++] = ' ';
-        
+
         if (file_list[i].type == CHAINFS_TYPE_DIR) {
           file_info[pos++] = '[';
           file_info[pos++] = 'D';
@@ -293,7 +318,7 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
         int pos = 0;
         file_info[pos++] = ' ';
         file_info[pos++] = ' ';
-        
+
         if (file_list[i].type == CHAINFS_TYPE_DIR) {
           file_info[pos++] = '[';
           file_info[pos++] = 'D';
@@ -319,14 +344,16 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     print("Reading files...", (*current_line)++, 0, 0x0F);
     u8 read_buffer[256];
     u32 bytes_read;
-    
-    if (chainfs_read_file("root.txt", read_buffer, sizeof(read_buffer), &bytes_read) == 0) {
+
+    if (chainfs_read_file("root.txt", read_buffer, sizeof(read_buffer),
+                          &bytes_read) == 0) {
       read_buffer[bytes_read] = 0;
       print("  root.txt: ", (*current_line), 0, 0x0A);
       print((char *)read_buffer, (*current_line)++, 12, 0x0F);
     }
-    
-    if (chainfs_read_file("test/file1.txt", read_buffer, sizeof(read_buffer), &bytes_read) == 0) {
+
+    if (chainfs_read_file("test/file1.txt", read_buffer, sizeof(read_buffer),
+                          &bytes_read) == 0) {
       read_buffer[bytes_read] = 0;
       print("  test/file1.txt: ", (*current_line), 0, 0x0A);
       print((char *)read_buffer, (*current_line)++, 17, 0x0F);
