@@ -12,11 +12,9 @@ static void pata_wait_drq() {
     ;
 }
 
-// Используем статический буфер, чтобы не забивать стек и не зависеть от
-// аллокатора в прерываниях
 static unsigned short pata_dummy_buffer[256];
 
-void pata_identify() {
+void pata_identify(unsigned short *target_buf) {
   com1_printf("PATA: Identifying drive...\n");
   outb(IDE_DRIVE_SEL, 0xA0);
   outb(IDE_SEC_COUNT, 0);
@@ -33,8 +31,11 @@ void pata_identify() {
 
   pata_wait_bsy();
 
-  // Читаем IDENTIFY данные в статический буфер
-  insw(IDE_DATA, pata_dummy_buffer, 256);
+  if (target_buf) {
+    insw(IDE_DATA, target_buf, 256);
+  } else {
+    insw(IDE_DATA, pata_dummy_buffer, 256);
+  }
 
   com1_printf("PATA: Drive identified successfully.\n");
 }

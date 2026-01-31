@@ -1,6 +1,6 @@
 #include <kernel/bin/mydir.h>
-#include <kernel/drivers/vga.h>
 #include <kernel/drivers/fs/chainFS/chainfs.h>
+#include <kernel/drivers/vga.h>
 #include <mlibc/mlibc.h>
 
 void mydir(char *dir, int *current_line) {
@@ -12,9 +12,8 @@ void mydir(char *dir, int *current_line) {
   } else {
     print("Error getting current directory", (*current_line)++, 0, 0x0C);
   }
-  
-  print(dir, *current_line, 0, 0x0F);
-  print(">", *current_line, 1, 0x0F);
+
+  print("/>", *current_line, 0, 0x0F);
 
   if (*current_line >= 25) {
     *current_line = 24;

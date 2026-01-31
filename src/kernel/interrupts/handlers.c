@@ -1,4 +1,5 @@
 #include <kernel/drivers/keyboard.h>
+#include <kernel/drivers/mouse.h>
 #include <kernel/drivers/vga.h>
 #include <kernel/interrupts/idt.h>
 
@@ -9,8 +10,10 @@ void isr_handler(registers_t *regs) { kernel_panic(regs); }
 
 void irq_handler(registers_t *regs) {
   if (regs->int_no == 33) {
-
-    unsigned char scancode = inb(0x60);
+    (void)inb(0x60);
+  }
+  else if (regs->int_no == 44) {
+    mouse_handler();
   }
 
   pic_send_eoi(regs->int_no - 32);

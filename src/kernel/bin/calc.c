@@ -4,22 +4,19 @@
 #include <mlibc/mlibc.h>
 
 void calc(char *s_buf, int *current_line, char *dir) {
-  print(dir, *current_line, 0, 0x0F);
-  print(">", *current_line, 1, 0x0F);
+  print("/>", *current_line, 0, 0x0F);
   print("first number: ", (*current_line)++, 2, 0x0F);
 
   scanf(s_buf, 2048, *current_line - 1, 16, 0x0F, dir);
   int first_number = atoi(s_buf);
 
-  print(dir, *current_line, 0, 0x0F);
-  print(">", *current_line, 1, 0x0F);
+  print("/>", *current_line, 0, 0x0F);
   print("second number: ", (*current_line)++, 2, 0x0F);
 
   scanf(s_buf, 2048, *current_line - 1, 17, 0x0F, dir);
   int second_number = atoi(s_buf);
 
-  print(dir, *current_line, 0, 0x0F);
-  print(">", *current_line, 1, 0x0F);
+  print("/>", *current_line, 0, 0x0F);
   print("operation: ", (*current_line)++, 2, 0x0F);
 
   scanf(s_buf, 2048, *current_line - 1, 13, 0x0F, dir);

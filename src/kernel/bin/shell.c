@@ -1,5 +1,6 @@
 #include <kernel/bin/calc.h>
 #include <kernel/bin/cat.h>
+#include <kernel/bin/disk.h>
 #include <kernel/bin/info.h>
 #include <kernel/bin/mydir.h>
 #include <kernel/bin/shell.h>
@@ -27,32 +28,31 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     get_cpu_model(model);
     print(vendor, (*current_line)++, 0, 0x0F);
     print(model, (*current_line)++, 0, 0x0F);
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   } else if (strcmp(s_buf, "clear") == 0) {
     clear_screen();
     *current_line = 1;
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   } else if (strcmp(s_buf, "help") == 0) {
     print("Commands: shutdown, reboot, clear, echo, mydir, help, calc, info,",
           (*current_line)++, 0, 0x0A);
-    print("          test_fs, mkdir, ls, cd, rmdir, touch, cat, format",
+    print("          test_fs, mkdir, ls, cd, rmdir, touch, cat, format, disk",
           (*current_line)++, 0, 0x0A);
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   } else if (s_buf[0] == 'e' && s_buf[1] == 'c' && s_buf[2] == 'h' &&
              s_buf[3] == 'o' && s_buf[4] == ' ') {
     print(&s_buf[5], *current_line, 2, 0x0F);
     (*current_line)++;
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   } else if (strcmp(s_buf, "calc") == 0) {
     calc(s_buf, current_line, dir);
+  } else if (strcmp(s_buf, "disk") == 0 ||
+             (s_buf[0] == 'd' && s_buf[1] == 'i' && s_buf[2] == 's' &&
+              s_buf[3] == 'k' && s_buf[4] == ' ')) {
+    disk(s_buf, current_line, dir);
   } else if (strcmp(s_buf, "mkdir") == 0) {
     print("Usage: mkdir <directory_name>", (*current_line)++, 0, 0x0C);
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   } else if (s_buf[0] == 'm' && s_buf[1] == 'k' && s_buf[2] == 'd' &&
              s_buf[3] == 'i' && s_buf[4] == 'r' && s_buf[5] == ' ') {
     if (chainfs_mkdir(&s_buf[6]) == 0) {
@@ -60,8 +60,7 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     } else {
       print("Failed to create directory", (*current_line)++, 0, 0x0C);
     }
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   } else if (strcmp(s_buf, "ls") == 0) {
     chainfs_file_entry_t file_list[20];
     u32 file_count;
@@ -119,8 +118,7 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     } else {
       print("Error reading directory", (*current_line)++, 0, 0x0C);
     }
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   } else if (s_buf[0] == 'l' && s_buf[1] == 's' && s_buf[2] == ' ') {
     chainfs_file_entry_t file_list[20];
     u32 file_count;
@@ -178,8 +176,7 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     } else {
       print("Error reading directory", (*current_line)++, 0, 0x0C);
     }
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   } else if (strcmp(s_buf, "cd") == 0) {
     if (chainfs_chdir("/") == 0) {
       chainfs_get_current_path(dir, 256);
@@ -187,8 +184,7 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     } else {
       print("Failed to change to root directory", (*current_line)++, 0, 0x0C);
     }
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   } else if (s_buf[0] == 'c' && s_buf[1] == 'd' && s_buf[2] == ' ') {
     if (chainfs_chdir(&s_buf[3]) == 0) {
       chainfs_get_current_path(dir, 256);
@@ -196,12 +192,10 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     } else {
       print("Failed to change directory", (*current_line)++, 0, 0x0C);
     }
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   } else if (strcmp(s_buf, "rmdir") == 0) {
     print("Usage: rmdir <directory_name>", (*current_line)++, 0, 0x0C);
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   } else if (s_buf[0] == 'r' && s_buf[1] == 'm' && s_buf[2] == 'd' &&
              s_buf[3] == 'i' && s_buf[4] == 'r' && s_buf[5] == ' ') {
     if (chainfs_rmdir(&s_buf[6]) == 0) {
@@ -209,8 +203,7 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     } else {
       print("Failed to remove directory", (*current_line)++, 0, 0x0C);
     }
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   } else if (s_buf[0] == 't' && s_buf[1] == 'o' && s_buf[2] == 'u' &&
              s_buf[3] == 'c' && s_buf[4] == 'h' &&
              (s_buf[5] == ' ' || s_buf[5] == 0)) {
@@ -225,8 +218,7 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     } else {
       print("format failed", (*current_line)++, 0, 0x0C);
     }
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   } else if (strcmp(s_buf, "test_fs") == 0) {
     print("=== ChainFS Directory Test ===", (*current_line)++, 0, 0x0A);
 
@@ -361,13 +353,11 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
 
     print("=== Test Complete ===", (*current_line)++, 0, 0x0A);
 
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   } else {
     print("Unknown command", *current_line, 0, 0x0F);
     (*current_line)++;
-    print(dir, *current_line, 0, 0x0F);
-    print(">", *current_line, 1, 0x0F);
+    print("/>", *current_line, 0, 0x0F);
   }
 
   if (*current_line >= 25) {

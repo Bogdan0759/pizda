@@ -2,6 +2,7 @@
 #include <kernel/drivers/fs/chainFS/chainfs.h>
 
 chainfs_t g_chainfs;
+#define ENTRIES_PER_BLOCK (CHAINFS_BLOCK_SIZE / sizeof(chainfs_file_entry_t))
 
 int chainfs_init(void) {
   com1_printf("ChainFS: Initializing...\n");
@@ -58,7 +59,7 @@ int chainfs_format(u32 total_blocks, u32 max_files) {
   sb.file_table_block_count = file_table_blocks;
   sb.block_map_block_count = block_map_blocks;
   sb.total_files = max_files;
-  sb.root_dir_block = 1; // Root directory will be in first file table block
+  sb.root_dir_block = 0;
 
   for (int i = 0; i < CHAINFS_BLOCK_SIZE; i++) {
     g_chainfs.sector_buffer[i] = 0;
@@ -79,8 +80,8 @@ int chainfs_format(u32 total_blocks, u32 max_files) {
   entries[0].name[0] = '/';
   entries[0].name[1] = 0;
   entries[0].size = 0;
-  entries[0].start_block = 0;  // Root directory doesn't need data blocks
-  entries[0].parent_block = 0; // Root has no parent
+  entries[0].start_block = 0; // Root directory doesn't need data blocks
+  entries[0].parent_block = 0xFFFFFFFF; // Root has no parent
 
   pata_write_sector(1, g_chainfs.sector_buffer);
 
@@ -430,6 +431,25 @@ int chainfs_get_file_list(chainfs_file_entry_t *files, u32 max_files,
   return chainfs_list_dir("", files, max_files, file_count);
 }
 
+static int read_entry_by_index(u32 index, chainfs_file_entry_t *entry,
+                               u32 *block, u32 *offset) {
+  if (index >= g_chainfs.superblock.total_files)
+    return -1;
+
+  u32 b = 1 + (index / ENTRIES_PER_BLOCK);
+  u32 o = index % ENTRIES_PER_BLOCK;
+
+  pata_read_sector(b, g_chainfs.sector_buffer);
+  chainfs_file_entry_t *entries =
+      (chainfs_file_entry_t *)g_chainfs.sector_buffer;
+  *entry = entries[o];
+  if (block)
+    *block = b;
+  if (offset)
+    *offset = o;
+  return 0;
+}
+
 // Helper function to split path into components
 static int split_path(const char *path, char components[][32],
                       int max_components) {
@@ -527,7 +547,7 @@ int chainfs_resolve_path(const char *path, chainfs_file_entry_t *entry,
       if (found_entry.type != CHAINFS_TYPE_DIR) {
         return -1; // Not a directory
       }
-      current_block = found_block;
+      current_block = (found_block - 1) * ENTRIES_PER_BLOCK + found_offset;
     }
   }
 
@@ -637,7 +657,8 @@ int chainfs_chdir(const char *path) {
     return -1;
   }
 
-  g_chainfs.current_dir_block = entry_block;
+  g_chainfs.current_dir_block =
+      (entry_block - 1) * ENTRIES_PER_BLOCK + entry_offset;
   com1_printf("ChainFS: Changed directory to: %s\n", path);
   return 0;
 }
@@ -701,37 +722,21 @@ char *chainfs_get_current_path(char *buffer, u32 buffer_size) {
   char temp_path[CHAINFS_MAX_PATH];
   temp_path[0] = 0;
 
-  u32 current_block = g_chainfs.current_dir_block;
+  u32 current_idx = g_chainfs.current_dir_block;
 
-  while (current_block != g_chainfs.superblock.root_dir_block) {
-    // Find current directory entry
-    chainfs_file_entry_t current_entry;
-    u32 entries_per_block = CHAINFS_BLOCK_SIZE / sizeof(chainfs_file_entry_t);
-    int found = 0;
-
-    pata_read_sector(current_block, g_chainfs.sector_buffer);
-    chainfs_file_entry_t *entries =
-        (chainfs_file_entry_t *)g_chainfs.sector_buffer;
-
-    for (u32 i = 0; i < entries_per_block; i++) {
-      if (entries[i].status == 1 && entries[i].type == CHAINFS_TYPE_DIR) {
-        current_entry = entries[i];
-        found = 1;
-        break;
-      }
-    }
-
-    if (!found)
+  while (current_idx != g_chainfs.superblock.root_dir_block &&
+         current_idx != 0xFFFFFFFF) {
+    chainfs_file_entry_t entry;
+    if (read_entry_by_index(current_idx, &entry, NULL, NULL) != 0)
       break;
 
-    // Prepend directory name to path
-    char new_temp[CHAINFS_MAX_PATH];
-    new_temp[0] = '/';
-    strcpy(new_temp + 1, current_entry.name);
-    strcat(new_temp, temp_path);
-    strcpy(temp_path, new_temp);
+    char new_name[CHAINFS_MAX_PATH];
+    new_name[0] = '/';
+    strcpy(new_name + 1, entry.name);
+    strcat(new_name, temp_path);
+    strcpy(temp_path, new_name);
 
-    current_block = current_entry.parent_block;
+    current_idx = entry.parent_block;
   }
 
   if (strlen(temp_path) == 0) {

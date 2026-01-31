@@ -69,11 +69,11 @@ outw:
 global insw
 insw:
 %ifdef __x86_64__
-    push rdi       
-    mov dx, di    
-    mov rdi, rsi   
-    mov rcx, rdx   
-    cld            
+    push rdi
+    mov dx, di     
+    mov rdi, rsi    
+    mov rcx, rdx    
+    cld
     rep insw
     pop rdi
     ret
@@ -94,13 +94,10 @@ insw:
 global outsw
 outsw:
 %ifdef __x86_64__
-    push rsi
-    mov dx, di    
-    mov rsi, rsi   
-    mov rcx, rdx   
+    mov dx, di     
+    mov rcx, rdx    
     cld
     rep outsw
-    pop rsi
     ret
 %else
     push ebp

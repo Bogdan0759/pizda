@@ -41,3 +41,13 @@ Used primarily for kernel debugging and logging.
 - **Port**: `0x3F8`.
 - **API**:
     - `void com1_printf(const char *format, ...)`: Formatted output to the serial console.
+## 6. Mouse Driver (`src/kernel/drivers/mouse.c`)
+Handles input from a PS/2 mouse.
+- **Interrupt**: IRQ 12 (Global Interrupt 44).
+- **Features**:
+    - PS/2 initialization and data reporting.
+    - 3-byte packet processing.
+    - Tracks X, Y coordinates and button states.
+- **API**:
+    - `void mouse_init()`: Initializes the PS/2 mouse controller.
+    - `mouse_state_t* get_mouse_state()`: Returns the current mouse position and button status.

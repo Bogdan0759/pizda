@@ -24,6 +24,6 @@
 
 void pata_read_sector(unsigned int lba, unsigned char *buffer);
 void pata_write_sector(unsigned int lba, unsigned char *buffer);
-void pata_identify();
+void pata_identify(unsigned short *target_buf);
 
 #endif

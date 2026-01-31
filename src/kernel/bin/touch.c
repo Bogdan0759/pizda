@@ -30,8 +30,7 @@ void touch(char *s_buf, int *current_line, char *dir) {
     print("Usage: touch [name] -C content", (*current_line)++, 0, 0x0C);
   }
 
-  print(dir, *current_line, 0, 0x0F);
-  print(">", *current_line, 1, 0x0F);
+  print("/>", *current_line, 0, 0x0F);
 
   if (*current_line >= 25) {
     *current_line = 24;

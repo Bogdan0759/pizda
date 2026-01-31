@@ -1,6 +1,8 @@
 #include <kernel/bin/shell.h>
 #include <kernel/drivers/disk/pata/pata.h>
+#include <kernel/drivers/fs/chainFS/chainfs.h>
 #include <kernel/drivers/keyboard.h>
+#include <kernel/drivers/mouse.h>
 #include <kernel/drivers/vga.h>
 #include <kernel/interrupts/idt.h>
 #include <lib/com1.h>
@@ -10,7 +12,8 @@
 void kmain() {
   init_idt();
   init_heap();
-  pata_identify();
+  mouse_init();
+  pata_identify(NULL);
   clear_screen();
 
   print("OTSOS started!", 0, 30, 0x0A);
@@ -28,8 +31,7 @@ void kmain() {
   char dir[256] =
       "/"; // Потом когда добавим файловую систему нужнл будет немного изменить
 
-  print(dir, current_line, 0, 0x0F);
-  print(">", current_line, 1, 0x0F);
+  print("/>", current_line, 0, 0x0F);
 
   while (1) {
     scanf(s_buf, 2048, current_line, 2, 0x0F, dir);

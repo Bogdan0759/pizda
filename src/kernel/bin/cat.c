@@ -13,7 +13,7 @@ void cat(char *s_buf, int *current_line, char *dir) {
     if (chainfs_read_file(filename, buffer, sizeof(buffer) - 1, &bytes_read) ==
         0) {
       buffer[bytes_read] = 0;
-      
+
       char *line = (char *)buffer;
       char *next_line;
       while (line && *line) {
@@ -40,8 +40,7 @@ void cat(char *s_buf, int *current_line, char *dir) {
     print("use: cat {filename}", (*current_line)++, 0, 0x0C);
   }
 
-  print(dir, *current_line, 0, 0x0F);
-  print(">", *current_line, 1, 0x0F);
+  print("/>", *current_line, 0, 0x0F);
 
   if (*current_line >= 25) {
     *current_line = 24;
