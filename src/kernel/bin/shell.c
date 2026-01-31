@@ -3,6 +3,7 @@
 #include <kernel/bin/disk.h>
 #include <kernel/bin/info.h>
 #include <kernel/bin/mydir.h>
+#include <kernel/bin/fetch.h>
 #include <kernel/bin/shell.h>
 #include <kernel/bin/touch.h>
 #include <kernel/drivers/fs/chainFS/chainfs.h>
@@ -46,7 +47,11 @@ void shell_func(char *s_buf, int *current_line, char *dir) {
     print("/>", *current_line, 0, 0x0F);
   } else if (strcmp(s_buf, "calc") == 0) {
     calc(s_buf, current_line, dir);
-  } else if (strcmp(s_buf, "disk") == 0 ||
+  } 
+  else if (strcmp(s_buf, "fetch") == 0) {
+    fetch(current_line);
+  } 
+  else if (strcmp(s_buf, "disk") == 0 ||
              (s_buf[0] == 'd' && s_buf[1] == 'i' && s_buf[2] == 's' &&
               s_buf[3] == 'k' && s_buf[4] == ' ')) {
     disk(s_buf, current_line, dir);

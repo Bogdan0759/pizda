@@ -19,7 +19,8 @@ PRINTF_O = ../bin/printf.o
 STRING_O = ../bin/string.o
 ITOA_O = ../bin/itoa.o
 HARDWARE_O = ../bin/hardware.o
-CALC_O = ../bin/calc.o  
+CALC_O = ../bin/calc.o 
+FETCH_O = ../bin/fetch.o  
 MYDIR_O = ../bin/mydir.o
 INFO_O = ../bin/info.o
 SHELL_O = ../bin/shell.o
@@ -38,7 +39,7 @@ DISK_O = ../bin/disk.o
 MOUSE_O = ../bin/mouse.o
 
 OBJ = $(BOOT_O) $(KERNEL_O) $(VGA_O) $(KEYBOARD_O) $(PRINTF_O) $(STRING_O) \
-      $(ITOA_O) $(HARDWARE_O) $(CALC_O) $(MYDIR_O) \
+      $(ITOA_O) $(HARDWARE_O) $(CALC_O) $(FETCH_O) $(MYDIR_O) \
       $(INFO_O) $(SHELL_O) $(COM1_O) $(IDT_ASM_O) $(IDT_C_O) $(PIC_O) \
       $(HANDLERS_O) $(PANIC_O) $(MEMORY_O) $(PATA_O) $(CHAINFS_O) $(CAT_O) $(TOUCH_O) $(DISK_O) $(MOUSE_O)
 
@@ -105,7 +106,8 @@ $(HARDWARE_O): mlibc/hardware.asm
 
 $(CALC_O): kernel/bin/calc.c
 	$(CC) $(CFLAGS) -c $< -o $@
-
+$(FETCH_O): kernel/bin/fetch.c
+	$(CC) $(CFLAGS) -c $< -o $@
 $(INFO_O): kernel/bin/info.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
